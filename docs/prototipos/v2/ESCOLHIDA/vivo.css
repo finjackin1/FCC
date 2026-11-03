@@ -1,0 +1,47 @@
+/* v3 "vivo" (24/10/2026, pedido dele: cores menos lavadas, programa mais vivo, animações). Comum às propostas A, B e C.
+   Paleta: cinzas com um toque de azul (não o cinza neutro do Google), acento coral mais saturado, estados fortes. Grade de 4 px mantida. */
+:root, :root[data-tema="claro"] { --bg: #ffffff; --bg2: #f5f6fc; --bg3: #eaedf7; --linha: #e0e4f0; --fg: #131722; --fg2: #474f66; --fg3: #7a8299; --hover: #edf0f9;
+  --acento: #f2622e; --acento2: #fde9e1; --local: #2563eb; --pop: #ffffff; --sombra: 0 12px 32px rgba(20,24,40,.16); --ok: #059669; --amb: #d97706; --vm: #dc2626;
+  --brilho: 0 4px 14px color-mix(in srgb, var(--acento) 35%, transparent); }
+:root[data-tema="escuro"] { --bg: #14161d; --bg2: #1a1d27; --bg3: #252a38; --linha: #2b3040; --fg: #f1f3f9; --fg2: #c2c8da; --fg3: #8a92aa; --hover: #222736;
+  --acento: #ff7849; --acento2: #3b2219; --local: #5b9dff; --pop: #1d212d; --sombra: 0 16px 40px rgba(0,0,0,.55); --ok: #34d399; --amb: #fbbf24; --vm: #f87171;
+  --brilho: 0 4px 18px color-mix(in srgb, var(--acento) 40%, transparent); }
+
+/* estados com cor de verdade */
+.p-testar, .d-testar { background: var(--amb); color: #1b1300; } .p-decidir, .d-decidir { background: var(--local); color: #fff; } .d-livre { background: var(--ok); }
+.filtros span { background: linear-gradient(135deg, var(--amb), var(--acento)); color: #fff; }
+.c-btn.prim { background: linear-gradient(135deg, var(--acento), color-mix(in srgb, var(--acento) 75%, #e0306a)); border: 0; box-shadow: var(--brilho); }
+.c-btn { transition: transform .12s, filter .12s, background-color .12s; } .c-btn:active, .ib:active, .novo:active, .pj:active { transform: scale(.97); }
+.novo { background: color-mix(in srgb, var(--acento) 12%, transparent); color: var(--fg); } .novo:hover { background: color-mix(in srgb, var(--acento) 20%, transparent); }
+.ast { color: var(--acento); text-shadow: 0 0 12px color-mix(in srgb, var(--acento) 60%, transparent); }
+
+/* projeto com cor própria (--cor vem do nome: vivo.js) */
+.pj .ic { background: color-mix(in srgb, var(--cor, var(--fg3)) 22%, transparent); color: var(--cor, var(--fg)); }
+.pj.sel { background: color-mix(in srgb, var(--cor, var(--acento)) 13%, transparent); color: var(--fg); position: relative; }
+.pj.sel::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--cor, var(--acento)); }
+.pj.sel .ic { background: var(--cor, var(--acento)); color: #fff; }
+.f-cab .big { background: var(--cor, var(--acento)) !important; color: #fff !important; box-shadow: 0 8px 24px color-mix(in srgb, var(--cor, var(--acento)) 40%, transparent); }
+.bia .ico:first-child { color: var(--acento); } .bia.loc .ico:first-child, .bia.loc b { color: var(--local); }
+
+/* animações (curtas; nada pisca sozinho a não ser o que está trabalhando) */
+.pj, .grp, .lin2, .j-it, .f-card, .f-mem, .busca, .bia { transition: background-color .15s, box-shadow .15s, transform .15s; }
+.j-it:hover, .f-card:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.12); }
+.d-testar { --pc: var(--amb); } .d-decidir { --pc: var(--local); } .d-testar, .d-decidir { animation: pulso 2.4s ease-out infinite; }
+.menu { transform-origin: top left; }
+.toast { animation: toast .3s cubic-bezier(.2,.9,.3,1.2); }
+
+.c-trab .ast { animation: gira-ast 1.6s linear infinite; display: inline-block; }
+.j-barra i, .barra i { transition: width .6s cubic-bezier(.2,.9,.3,1); }
+.f-meio > *, .f-lado > * { } .f-meio > :nth-child(2), .f-lado > :nth-child(2) { animation-delay: .04s; } .f-meio > :nth-child(3), .f-lado > :nth-child(3) { animation-delay: .08s; } .f-meio > :nth-child(n+4) { animation-delay: .12s; }
+@keyframes barra { from { transform: scaleY(0); } } @keyframes surge-m { from { opacity: 0; transform: scale(.94) translateY(-4px); } }
+@keyframes toast { from { opacity: 0; transform: translate(-50%, 16px); } } @keyframes sobe { from { opacity: 0; transform: translateY(8px); } }
+@keyframes pulso { 0% { box-shadow: 0 0 0 2px var(--bg2), 0 0 0 2px color-mix(in srgb, var(--pc) 70%, transparent); } 70%, 100% { box-shadow: 0 0 0 2px var(--bg2), 0 0 0 8px transparent; } }
+@keyframes gira-ast { to { transform: rotate(360deg); } } @keyframes enche { from { width: 0; } }
+/* ENTRADA (24/10): cada animação de aparecer toca só no SEU evento (nunca num redesenho qualquer: isso piscava a tela a cada clique)
+   ficha = trocou de projeto (vivo.js .f-entra) · conversas do projeto = abriu a seta (B.js .abrindo) · grupo = abriu (B.js) · menu = abriu */
+.ficha.f-entra .f-meio > *, .ficha.f-entra .f-lado > * { animation: sobe .35s ease-out backwards; }
+.sub.abrindo, .grp-c.abrindo { animation: abre .22s ease-out; }
+.menu { animation: surge-m .16s cubic-bezier(.2,.9,.3,1.2); }
+.c-bl.c-novo { animation: sobe .3s ease-out; }   /* bloco NOVO da conversa (app.js trocarBlocos); o que está recebendo texto não anima */
+:root.cena *, :root.cena *::before { animation: none !important; transition: none !important; }   /* foto do autoteste: sem animação no meio */
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

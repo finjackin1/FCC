@@ -1,0 +1,18 @@
+/* Só o que a janela DE VERDADE exige além da tela copiada do protótipo (tela\v2\*). A aparência fica nos arquivos da v2. */
+body { background: var(--bg); display: block; min-height: 0; overflow: hidden; }
+#app { width: 100vw; height: 100vh; }
+/* arrastar a janela pelo topo (sem moldura do Windows); botões continuam clicáveis */
+.topo { -webkit-app-region: drag; } .topo button, .topo .win { -webkit-app-region: no-drag; }
+/* o palco guarda a ficha, as conversas (uma .chatC por conversa) e os terminais */
+#inicio { position: absolute; inset: 0; display: flex; }
+#chats { display: contents; }
+#chats > .chatC:not(.ativa) { content-visibility: hidden; pointer-events: none; z-index: -1; }   /* não display:none: voltar para uma conversa longa refazia a página inteira (~0,25 s) */
+#modal:empty, #toast:empty { display: none; }
+/* terminal de verdade (xterm.js): login e "Ver o terminal" */
+.term-area.xt { position: absolute; inset: 0; padding: 16px 20px; background: var(--bg); display: none; overflow: hidden; }
+.term-area.xt.ativa { display: block; }
+.xt-in { width: 100%; height: 100%; }
+.xterm .xterm-viewport { background: transparent !important; }
+.xterm-viewport::-webkit-scrollbar { width: 10px; } .xterm-viewport::-webkit-scrollbar-thumb { background: var(--linha); border-radius: 5px; border: 2px solid var(--bg); }
+#terms.fora { display: none; }
+.termC .term-area.xt { position: absolute; inset: 0; }

@@ -1,0 +1,54 @@
+/* Project sheet = proposal B "painel novo" (27/10/2026, user chose B from docs\prototipos	estar). Only the "Para testar" list scrolls. */
+.ficha.tl { overflow: hidden; grid-template-rows: minmax(0, 1fr); align-content: stretch; position: relative; }
+.ficha.tl .f-meio, .ficha.tl .f-lado { min-height: 0; }
+.ficha.tl .j-lista { overflow: auto; min-height: 0; flex: 0 1 auto; }
+.ficha.tl .j-it { flex: none; }
+
+/* lista comum */
+.tl-lista { display: flex; flex-direction: column; gap: 8px; overflow: auto; overscroll-behavior: contain; padding: 4px; margin: -4px; }
+.tl-it { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 14px; border-radius: 12px; background: var(--pop); border: 1px solid var(--linha); font-size: 13px; color: var(--fg); cursor: pointer; flex: none; transition: background-color .15s, border-color .15s; }
+.tl-it:hover { border-color: color-mix(in srgb, var(--cor, var(--acento)) 45%, var(--linha)); }
+.tl-it.vai { z-index: 0; }
+.tl-it input { position: absolute; opacity: 0; pointer-events: none; }
+.tl-ck { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--fg3); display: grid; place-items: center; flex: none; transition: background-color .15s, border-color .15s, transform .12s; }
+.tl-ck .ico { width: 12px; height: 12px; color: #fff; opacity: 0; transform: scale(.4); transition: opacity .15s, transform .2s cubic-bezier(.3,1.6,.5,1); stroke-width: 2.4; }
+.tl-it:active .tl-ck { transform: scale(.85); }
+.tl-it.feito { background: transparent; border-style: dashed; }
+.tl-it.feito .tl-ck { background: var(--ok); border-color: var(--ok); } .tl-it.feito .tl-ck .ico { opacity: 1; transform: none; }
+:root[data-tema="escuro"] .tl-it.feito .tl-ck .ico { color: #202124; }
+.tl-it.feito .tl-tx { color: var(--fg3); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--fg3) 60%, transparent); }
+.tl-tx { flex: 1; min-width: 0; line-height: 20px; }
+.tl-it input:focus-visible + .tl-ck { outline: 2px solid var(--acento); outline-offset: 2px; }
+.tl-sep { display: flex; align-items: baseline; gap: 8px; margin: 12px 4px 0; padding-top: 12px; border-top: 1px solid var(--linha); font-size: 12px; font-weight: 600; color: var(--ok); flex: none; }
+.tl-sep small { font-weight: 400; color: var(--fg3); margin-left: auto; text-align: right; }
+.tl-fim { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; color: var(--ok); font-size: 13px; flex: none; }
+.tl-anel { flex: none; transform: rotate(-90deg); } .tl-anel circle { fill: none; stroke-width: 4; } .tl-anel .tr { stroke: color-mix(in srgb, var(--fg3) 25%, transparent); }
+.tl-anel .vl { stroke: var(--ok); stroke-linecap: round; transition: stroke-dashoffset .5s cubic-bezier(.2,.8,.2,1); }
+
+/* ---------- B: painel novo, caixa do tamanho da área ---------- */
+.ficha.vb { display: flex; flex-direction: column; gap: 20px; padding: 28px 40px 32px; }
+.vb-topo { display: flex; align-items: center; gap: 16px; flex: none; } .vb-topo .f-cab { flex: 1; min-width: 0; }
+.vb-at { display: flex; gap: 8px; flex: none; } .vb-at .c-btn { white-space: nowrap; }
+.vb .f-comeca { flex: none; }
+.vb-grade { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.vb-esq, .vb-dir { min-height: 0; display: flex; flex-direction: column; gap: 16px; }
+.tb { flex: 1; min-height: 0; display: flex; flex-direction: column; border-radius: 20px; border: 1px solid var(--linha); background: linear-gradient(160deg, color-mix(in srgb, var(--cor, var(--acento)) 14%, var(--bg2)), var(--bg2) 60%); color: var(--fg); font: inherit; text-align: left; padding: 24px; position: relative; overflow: hidden; }
+button.tb { cursor: pointer; transition: border-color .2s, box-shadow .2s, transform .15s; } button.tb:hover { border-color: color-mix(in srgb, var(--cor, var(--acento)) 55%, var(--linha)); box-shadow: 0 10px 28px rgba(0,0,0,.18); } button.tb:active { transform: scale(.995); }
+.tb-top { display: flex; align-items: center; gap: 16px; }
+.tb-num { display: flex; flex-direction: column; } .tb-num b { font: 600 40px/44px "Segoe UI Variable Display", "Segoe UI", sans-serif; } .tb-num span { color: var(--fg2); font-size: 13px; } .tb-num small { color: var(--ok); font-size: 12px; margin-top: 2px; }
+.tb-tit { font: 600 20px/28px "Segoe UI Variable Display", "Segoe UI", sans-serif; margin-top: 20px; }
+.tb-vis { flex: 1; min-height: 0; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; -webkit-mask-image: linear-gradient(#000 0%, transparent 92%); filter: blur(.4px); }
+.tb-vis div { height: 40px; flex: none; display: block; line-height: 40px; padding: 0 14px; border-radius: 10px; background: color-mix(in srgb, var(--bg3) 70%, transparent); color: var(--fg3); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-abre { display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 20px; background: var(--bg3); color: var(--fg); font-size: 13px; font-weight: 600; margin-top: 12px; flex: none; transition: background-color .15s; }
+button.tb:hover .tb-abre { background: color-mix(in srgb, var(--cor, var(--acento)) 30%, var(--bg3)); }
+.tb.ab { padding: 8px 12px 12px; background: var(--bg2); }
+.tb-cab { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 8px; border: 0; background: none; color: var(--fg); font: inherit; cursor: pointer; border-radius: 12px; flex: none; text-align: left; }
+.tb-cab:hover { background: var(--hover); } .tb-cab b { font-size: 15px; } .tb-cab > span:not(.chev) { color: var(--fg3); font-size: 13px; margin-left: auto; }
+.tb-cab .chev { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 14px; background: var(--bg3); color: var(--fg2); }
+.tl-lista.dentro { flex: 1; min-height: 0; padding: 4px 4px 8px; margin: 0; }
+.tb.vazia { align-items: center; justify-content: center; text-align: center; gap: 8px; color: var(--fg3); background: var(--bg2); } .tb.vazia > .ico { width: 32px; height: 32px; color: var(--ok); } .tb.vazia b { color: var(--fg); font-size: 15px; } .tb.vazia span { font-size: 13px; max-width: 320px; }
+.vb-card { border: 1px solid var(--linha); border-radius: 16px; background: var(--bg2); padding: 8px 16px 12px; display: flex; flex-direction: column; min-height: 0; flex: none; }
+.vb-card.vb-conv { flex: 1; } .vb-card.vb-conv .j-lista { border: 0; border-radius: 0; margin: 0 -8px; } .vb-card .f-ct .q { margin-left: auto; }
+.vb .j-it { min-height: 44px; border-bottom-color: color-mix(in srgb, var(--linha) 70%, transparent); }
+.vb .j-it small { display: none; } @media (min-width: 1500px) { .vb .j-it small { display: inline; } }
+

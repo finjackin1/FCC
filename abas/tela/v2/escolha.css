@@ -1,0 +1,64 @@
+/* Tela de escolha da IA (25/10/2026, final aprovada: base A + fundo e informações da B + janela de exemplo da C; docs\prototipos\primeira-vez\proposta-final.html).
+   Camada própria por cima de tudo, abaixo do topo; o palco 1440×770 escala para caber na janela. */
+#escolha { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; background: #14161d; overflow: hidden; color: #f1f3f9; --acento2: #e0306a; --local2: #22d3ee; --curva: cubic-bezier(.2,.9,.3,1); }
+#escolha.entra { animation: esc-entra .4s var(--curva); } #escolha.sai { animation: esc-sai .3s ease-in forwards; pointer-events: none; }
+@keyframes esc-entra { from { opacity: 0; } } @keyframes esc-sai { to { opacity: 0; transform: scale(1.02); } }
+#escolha .ep { position: absolute; left: 50%; top: 50%; width: 1440px; height: 770px; margin: -385px 0 0 -720px; transform-origin: center; }
+#escolha .ico { width: 16px; height: 16px; flex: none; }
+#escolha .bv { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(1200px 500px at 50% 110%, #1d2130 0%, #14161d 60%); }
+#escolha .grade { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px); background-size: 24px 24px; mask-image: radial-gradient(closest-side, #000, transparent); }
+#escolha .topo-e { position: absolute; left: 0; right: 0; top: 56px; text-align: center; z-index: 5; pointer-events: none; }
+#escolha .kick { font-size: 12px; letter-spacing: 3px; font-weight: 700; color: #8a92aa; }
+#escolha h1 { margin: 12px 0 10px; font-size: 38px; font-weight: 700; letter-spacing: -.8px; text-shadow: 0 2px 30px rgba(0,0,0,.4); }
+#escolha .sub { color: #c2c8da; font-size: 16px; }
+#escolha .lado { position: absolute; top: 0; bottom: 0; width: 50%; pointer-events: none; z-index: 1; transition: clip-path .85s var(--curva); } #escolha .lado.c { left: 0; clip-path: inset(0 0 0 100%); } #escolha .lado.l { right: 0; clip-path: inset(0 100% 0 0); }
+#escolha[data-hover="claude"] .lado.c, #escolha[data-hover="local"] .lado.l { clip-path: inset(0); }
+#escolha .arte { position: absolute; inset: 0; width: 100%; height: 100%; display: block; } #escolha .arte .bolhas { opacity: .55; }
+#escolha .emenda { position: absolute; left: 50%; top: 140px; bottom: 60px; width: 1px; background: linear-gradient(transparent, rgba(255,255,255,.16) 30%, rgba(255,255,255,.16) 70%, transparent); z-index: 2; transition: opacity .4s; }
+#escolha[data-hover="claude"] .emenda, #escolha[data-hover="local"] .emenda { opacity: 0; }
+#escolha .metade { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 4; cursor: pointer; outline: none; } #escolha .metade.c { left: 0; } #escolha .metade.l { right: 0; }
+#escolha .flut { position: absolute; top: 150px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; text-align: center; pointer-events: none; transition: transform .6s var(--curva), opacity .4s; }
+#escolha .flut .mk { width: 88px; height: 88px; border-radius: 28px; display: grid; place-items: center; transition: transform .6s var(--curva), box-shadow .5s; animation: esc-paira 5s ease-in-out infinite; }
+#escolha .c .flut .mk { background: linear-gradient(135deg, var(--acento), var(--acento2)); box-shadow: 0 16px 40px color-mix(in srgb, var(--acento) 35%, transparent); }
+#escolha .l .flut .mk { background: linear-gradient(135deg, var(--local), var(--local2)); box-shadow: 0 16px 40px color-mix(in srgb, var(--local) 35%, transparent); animation-delay: -2.5s; }
+#escolha .flut .mk .ico { width: 42px; height: 42px; color: #fff; } @keyframes esc-paira { 50% { transform: translateY(-6px); } }
+#escolha .flut b { font-size: 34px; margin-top: 18px; letter-spacing: -.5px; } #escolha .flut small { font-size: 15px; color: #c2c8da; margin-top: 6px; transition: color .3s; }
+#escolha .flut .ir { margin-top: 14px; font-size: 13px; font-weight: 600; color: #8a92aa; display: inline-flex; gap: 6px; align-items: center; transition: color .3s, gap .3s; }
+#escolha[data-hover="claude"] .c .flut, #escolha[data-hover="local"] .l .flut { transform: translateY(-20px) scale(.88); }
+#escolha[data-hover="claude"] .c .flut .mk { transform: rotate(45deg); box-shadow: 0 0 50px var(--acento); } #escolha[data-hover="local"] .l .flut .mk { box-shadow: 0 0 50px var(--local); }
+#escolha[data-hover="claude"] .c .flut small, #escolha[data-hover="local"] .l .flut small { color: #fff; }
+#escolha[data-hover="claude"] .c .flut .ir, #escolha[data-hover="local"] .l .flut .ir { color: #fff; gap: 10px; }
+#escolha[data-hover="claude"] .l .flut, #escolha[data-hover="local"] .c .flut { opacity: .45; }
+#escolha .metade:active .flut .mk { transform: scale(.94); } #escolha .metade:focus-visible .flut .mk { outline: 2px solid #fff; outline-offset: 6px; }
+#escolha .prev { position: absolute; top: 368px; left: 50%; width: 460px; margin-left: -230px; border-radius: 18px; background: rgba(16,18,26,.82); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 40px 80px rgba(0,0,0,.45); backdrop-filter: blur(18px); padding: 16px; pointer-events: none; opacity: 0; transition: opacity .5s .12s, transform .9s var(--curva); }
+#escolha .c .prev { transform: perspective(1200px) rotateY(10deg) translateY(30px); } #escolha .l .prev { transform: perspective(1200px) rotateY(-10deg) translateY(30px); }
+#escolha[data-hover="claude"] .c .prev { opacity: 1; transform: perspective(1200px) rotateY(5deg); } #escolha[data-hover="local"] .l .prev { opacity: 1; transform: perspective(1200px) rotateY(-5deg); }
+#escolha .prev .pt { display: flex; gap: 6px; margin-bottom: 14px; } #escolha .prev .pt i { width: 10px; height: 10px; border-radius: 5px; background: rgba(255,255,255,.2); }
+#escolha .prev .eu { margin-left: auto; width: fit-content; max-width: 80%; background: #252a38; padding: 10px 14px; border-radius: 14px 14px 4px 14px; font-size: 13px; margin-bottom: 12px; }
+#escolha .prev .ia { display: flex; gap: 10px; font-size: 13px; color: #c2c8da; line-height: 1.5; } #escolha .prev .ia .av { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; flex: none; } #escolha .prev .ia .av .ico { width: 15px; height: 15px; color: #fff; }
+#escolha .prev .ia em { color: #fff; font-style: normal; font-weight: 600; } #escolha .prev .digita { display: inline-block; width: 0; white-space: nowrap; overflow: hidden; vertical-align: bottom; }
+#escolha[data-hover="claude"] .c .prev .digita, #escolha[data-hover="local"] .l .prev .digita { animation: esc-digita 2.2s .7s steps(40) forwards; } @keyframes esc-digita { to { width: 100%; } }
+#escolha .prev .bx { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.05); font-size: 12px; color: #c2c8da; }
+#escolha .barra-p { height: 6px; border-radius: 3px; background: #252a38; overflow: hidden; margin-top: 6px; } #escolha .barra-p i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--local), var(--local2)); }
+#escolha .ganha { position: absolute; top: 640px; left: 50%; width: 520px; margin-left: -260px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 22px; pointer-events: none; }
+#escolha .ganha div { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: #fff; opacity: 0; transform: translateY(10px); transition: opacity .4s, transform .5s var(--curva); text-shadow: 0 1px 10px rgba(0,0,0,.4); }
+#escolha .ganha div .ico { width: 16px; height: 16px; margin-top: 1px; } #escolha .ganha div.menos { color: rgba(255,255,255,.72); }
+#escolha[data-hover="claude"] .c .ganha div, #escolha[data-hover="local"] .l .ganha div { opacity: 1; transform: none; }
+#escolha .ganha div:nth-child(1) { transition-delay: .25s; } #escolha .ganha div:nth-child(2) { transition-delay: .3s; } #escolha .ganha div:nth-child(3) { transition-delay: .35s; } #escolha .ganha div:nth-child(4) { transition-delay: .4s; }
+#escolha .marca-d { position: absolute; bottom: -14px; font-size: 150px; font-weight: 800; letter-spacing: -7px; color: rgba(255,255,255,.07); line-height: 1; opacity: 0; transition: opacity .6s .15s, transform .8s var(--curva); pointer-events: none; white-space: nowrap; }
+#escolha .c .marca-d { left: 40px; transform: translateX(-40px); } #escolha .l .marca-d { right: 40px; transform: translateX(40px); }
+#escolha[data-hover="claude"] .c .marca-d, #escolha[data-hover="local"] .l .marca-d { opacity: 1; transform: none; }
+#escolha.entra .topo-e > * { animation: esc-sobe .5s var(--curva) backwards; } #escolha.entra .topo-e > :nth-child(2) { animation-delay: .07s; } #escolha.entra .topo-e > :nth-child(3) { animation-delay: .14s; }
+#escolha.entra .flut { animation: esc-sobe .6s .15s var(--curva) backwards; } #escolha.entra .l .flut { animation-delay: .25s; }
+@keyframes esc-sobe { from { opacity: 0; transform: translateY(14px); } }
+/* artes vivas */
+#escolha .arte .ast-g { transform-box: fill-box; transform-origin: center; animation: esc-respira 7s ease-in-out infinite; } @keyframes esc-respira { 50% { transform: rotate(8deg) scale(1.04); } }
+#escolha .arte .bolha { animation: esc-flutua 11s linear infinite; } #escolha .arte .bolha .lin { fill: #fff; fill-opacity: .35; stroke: none; }
+@keyframes esc-flutua { 0% { transform: translateY(40px); opacity: 0; } 15%, 75% { opacity: 1; } 100% { transform: translateY(-260px); opacity: 0; } }
+#escolha .arte .orbe { animation: esc-deriva 14s ease-in-out infinite alternate; } #escolha .arte .o2 { animation-duration: 18s; animation-direction: alternate-reverse; } @keyframes esc-deriva { to { transform: translate(60px, -40px); } }
+#escolha .arte .pulso-t { stroke: #e9f8ff; stroke-opacity: .95; stroke-dasharray: 18 520; animation: esc-corre 3.2s linear infinite; } @keyframes esc-corre { from { stroke-dashoffset: 540; } to { stroke-dashoffset: 0; } }
+#escolha .arte .no, #escolha .arte .nucleo { animation: esc-acende 2.4s ease-in-out infinite; } #escolha .arte .no { fill: #bfe6ff; } @keyframes esc-acende { 50% { opacity: .5; } }
+#escolha .arte .chip-g { transform-box: fill-box; transform-origin: center; animation: esc-chip 6s ease-in-out infinite; } @keyframes esc-chip { 50% { transform: translateY(-8px); } }
+:root.cena #escolha *, :root.cena #escolha { animation: none !important; transition: none !important; } :root.cena #escolha .prev .digita { width: auto; }
+@media (prefers-reduced-motion: reduce) { #escolha * { animation: none !important; transition: none !important; } }
+#escolha .sub { margin-top: 10px; } #escolha h1 { line-height: 1.15; } #escolha .flut small { margin-top: 8px; display: block; } #escolha .flut b { line-height: 1.1; }

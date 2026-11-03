@@ -1,0 +1,12 @@
+/perfil/
+/conta/
+/projects/
+/ferramentas/
+/temp/
+/inventario/
+/dist/
+/testes/
+docs/historico/
+node_modules/
+*.log
+.playwright-cli/

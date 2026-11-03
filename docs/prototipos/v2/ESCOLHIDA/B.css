@@ -1,0 +1,34 @@
+/* v3 proposta B "Projetos e conversas" */
+.trilho { width: 284px; background: linear-gradient(180deg, color-mix(in srgb, var(--acento) 6%, var(--bg2)), var(--bg2) 180px); }
+  background: color-mix(in srgb, var(--amb) 14%, transparent); border: 1px solid color-mix(in srgb, var(--amb) 35%, transparent); }
+.sec small { font-weight: 600; color: var(--acento); margin-left: 4px; }
+/* conversa aberta ("Agora") */
+.cv { height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 4px 0 8px; border-radius: 12px; cursor: pointer; color: var(--fg2); position: relative; transition: background-color .15s; }
+.cv:hover { background: var(--hover); } .cv.sel { background: color-mix(in srgb, var(--cor) 14%, transparent); color: var(--fg); }
+.cv.sel::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 2px; background: var(--cor); }
+.cv-ic { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font-weight: 700; font-size: 12px; background: var(--cor); color: #fff; flex: none; }
+.cv .n { flex: 1; min-width: 0; } .cv .n div { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 500; } .cv .n small { display: flex; align-items: center; gap: 0; font-size: 11px; color: var(--fg3); line-height: 14px; white-space: nowrap; overflow: hidden; }
+.cv i.vivo, .cv i.pede { width: 6px; height: 6px; border-radius: 3px; margin-right: 6px; flex: none; } .cv i.vivo { background: var(--acento); animation: pisca 1s ease-in-out infinite alternate; } .cv i.pede { background: var(--amb); }
+.cv:hover .mais, .cv.sel .mais { opacity: 1; }
+.cv.trab .cv-ic { box-shadow: 0 0 0 2px var(--bg2), 0 0 0 4px color-mix(in srgb, var(--cor) 60%, transparent); animation: anel 1.6s ease-in-out infinite; }
+/* projeto que abre: seta à esquerda e conversas dentro */
+.pj { padding-left: 2px; gap: 6px; } .pj .ic { margin-right: 4px; }
+.chev2 { width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; color: var(--fg3); flex: none; } .chev2:hover { background: var(--bg3); color: var(--fg); }
+.chev2 .ico { width: 10px; height: 10px; transition: transform .2s cubic-bezier(.2,.9,.3,1.2); } .pj.ab .chev2 .ico { transform: rotate(90deg); }
+.sub { margin: 0 0 4px 34px; padding-left: 10px; border-left: 2px solid color-mix(in srgb, var(--cor) 45%, transparent); overflow: hidden; }
+.sc { height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 8px; font-size: 12.5px; color: var(--fg2); cursor: pointer; transition: background-color .15s, transform .15s; }
+.sc:hover { background: var(--hover); color: var(--fg); transform: translateX(2px); } .sc span { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .sc small { color: var(--fg3); font-size: 11px; }
+.sc.nova { color: var(--cor); font-weight: 500; } .sc.nova .ico { width: 12px; height: 12px; }
+.grp-c { }
+@keyframes abre { from { opacity: 0; max-height: 0; } to { max-height: 400px; } } @keyframes pisca { to { opacity: .35; } }
+@keyframes anel { 50% { box-shadow: 0 0 0 2px var(--bg2), 0 0 0 6px color-mix(in srgb, var(--cor) 20%, transparent); } }
+@keyframes pulso-b { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--amb) 60%, transparent); } 70%, 100% { box-shadow: 0 0 0 8px transparent; } }
+/* rascunhos (25/10): botões só no hover, para o título usar a largura toda */ .cv.rasc .mais { display: none; } .cv.rasc:hover .mais, .cv.rasc:focus-within .mais { display: grid; } .cv.rasc .cv-ic { background: var(--bg3); color: var(--fg2); }
+
+/* bolinhas de pendência (25/10): cores fixas da casa; as que pedem você pulsam (pulso-p no SINC do vivo.js: não pisca ao redesenhar) */
+.pend { display: inline-flex; gap: 3px; margin-right: 6px; vertical-align: 0; } .pend i { width: 7px; height: 7px; border-radius: 4px; display: inline-block; background: var(--pc); transition: transform .15s; } .pend i:hover { transform: scale(1.5); }
+.pc-decidir { --pc: #ef4444; } .pc-teste { --pc: #f5b82e; } .pc-publicar { --pc: #f08c2e; } .pc-trabalhando { --pc: #a371f7; } .pc-mudancas { --pc: #3e8bff; } .pc-publicado { --pc: #22c55e; } .pc-parado { --pc: #8b919c; }
+.pend .pc-decidir, .pend .pc-teste, .pend .pc-trabalhando { animation: pulso-p 2.4s ease-out infinite; }
+@keyframes pulso-p { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--pc) 70%, transparent); } 70%, 100% { box-shadow: 0 0 0 5px transparent; } }
+/* rascunhos: botões do hover entram com fade (interface-web §2) */
+.cv.rasc:hover .mais, .cv.rasc:focus-within .mais { animation: aparece .14s ease-out; } @keyframes aparece { from { opacity: 0; transform: scale(.85); } }

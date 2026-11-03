@@ -1,0 +1,18 @@
+FCC (finjackin Claude Center)
+Copyright (C) 2026 finjackin
+
+This program is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License version 3, as published by the Free
+Software Foundation (see LICENSE).
+
+Additional permission under GNU GPL version 3 section 7
+
+If you modify this Program, or any covered work, by linking or combining it with
+the Claude Agent SDK (npm package @anthropic-ai/claude-agent-sdk) by Anthropic PBC
+(or a modified version of that library), containing parts covered by the terms of
+Anthropic's license for that library, the licensors of this Program grant you
+additional permission to convey the resulting work.
+
+This permission does not change the license of the Claude Agent SDK itself. Its use
+remains subject to Anthropic's terms:
+https://code.claude.com/docs/en/legal-and-compliance

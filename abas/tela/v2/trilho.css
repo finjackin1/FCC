@@ -1,0 +1,98 @@
+/* B "Trilho de projetos" (escolhido 23/10/2026), 2ª rodada no jeito do Claude Desktop. Tamanho do ExitLag: 1440×810; Mín. 1080×608 sem zoom (compacto.css). */
+#app { width: 1440px; height: 810px; }
+.topo { height: 40px; display: flex; align-items: center; gap: 8px; padding-left: 12px; border-bottom: 1px solid var(--linha); flex: none; position: relative; z-index: 30; }
+.marca { display: flex; align-items: center; gap: 6px; font-weight: 600; width: 256px; } .onde { flex: 1; color: var(--fg3); font-size: 13px; display: flex; align-items: center; gap: 8px; } .onde b { color: var(--fg); font-weight: 600; }
+.estado { height: 28px; padding: 0 10px; border-radius: 14px; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.estado.lim { background: color-mix(in srgb, var(--amb) 18%, transparent); color: var(--amb); } .estado.nova { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.corpo { flex: 1; display: flex; min-height: 0; }
+
+/* trilho */
+.trilho { width: 268px; background: var(--bg2); border-right: 1px solid var(--linha); display: flex; flex-direction: column; flex: none; position: relative; }
+.novo { margin: 12px 12px 8px; height: 36px; border-radius: 10px; display: flex; align-items: center; gap: 8px; padding: 0 12px; font-weight: 500; color: var(--fg); } .novo:hover { background: var(--hover); } .novo .ico { color: var(--acento); } .novo kbd { margin-left: auto; }
+.busca input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; color: var(--fg); } .busca input::placeholder { color: var(--fg3); opacity: 1; } .busca:focus-within { box-shadow: 0 0 0 2px color-mix(in srgb, var(--acento) 45%, transparent); }
+.tr-nada { padding: 16px; color: var(--fg3); font-size: 13px; }
+.busca { margin: 0 12px; height: 32px; border-radius: 16px; background: var(--bg3); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--fg3); font-size: 13px; }
+.filtros { display: flex; gap: 4px; padding: 8px 12px 4px; } .filtros button { height: 26px; padding: 0 10px; border-radius: 13px; font-size: 12px; color: var(--fg3); display: flex; align-items: center; gap: 6px; }
+.filtros button.on { background: var(--bg3); color: var(--fg); font-weight: 600; } .filtros span { background: #e37400; color: #fff; border-radius: 8px; padding: 0 5px; font-size: 10px; line-height: 16px; font-weight: 600; }
+.lista { flex: 1; overflow: auto; padding: 0 8px 8px; }
+.sec { font-size: 11px; font-weight: 600; color: var(--fg3); text-transform: uppercase; letter-spacing: .4px; padding: 12px 8px 4px; }
+.grp { height: 32px; margin-top: 8px; display: flex; align-items: center; gap: 6px; padding: 0 4px 0 6px; border-radius: 8px; color: var(--fg2); font-size: 12px; font-weight: 600; cursor: pointer; }
+.grp:hover { background: var(--hover); } .grp small { color: var(--fg3); font-weight: 400; } .grp .mais { margin-left: auto; } .grp.sem { cursor: default; padding-left: 8px; }
+.chev .ico { width: 12px; height: 12px; transition: transform .15s; } .chev.ab .ico { transform: rotate(90deg); }
+.pj { height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 4px 0 8px; border-radius: 10px; cursor: pointer; color: var(--fg2); }
+.pj:hover { background: var(--hover); } .pj.sel { background: var(--bg3); color: var(--fg); } .pj.arrastando { opacity: .4; } .pj.alvo, .grp.alvo { box-shadow: inset 0 2px 0 var(--acento); }
+.pj .ic { width: 28px; height: 28px; border-radius: 14px; background: var(--bg3); display: grid; place-items: center; font-weight: 600; font-size: 12px; position: relative; flex: none; }
+.pj.sel .ic { background: var(--bg); } .pj .ic .dot { position: absolute; right: -1px; bottom: -1px; box-shadow: 0 0 0 2px var(--bg2); }
+.pj .n { flex: 1; min-width: 0; } .pj .n div { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .pj .n small { display: block; font-size: 11px; color: var(--fg3); line-height: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pj .st { display: flex; align-items: center; gap: 4px; } .pj .st .ico { width: 14px; height: 14px; color: var(--local); } .aberta { width: 6px; height: 6px; border-radius: 3px; background: var(--fg2); }
+.mais { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; color: var(--fg3); opacity: 0; font-size: 14px; line-height: 1; flex: none; } .mais .ico { width: 12px; height: 12px; }
+.pj:hover .mais, .grp:hover .mais, .pj.sel .mais { opacity: 1; } .mais:hover { background: var(--bg3); color: var(--fg); }
+.ren { width: 100%; height: 24px; border: 1px solid var(--acento); border-radius: 6px; background: var(--bg); color: var(--fg); font: inherit; padding: 0 6px; outline: none; }
+.ren.grande { font: 600 26px/34px "Segoe UI Variable Display", "Segoe UI", sans-serif; height: 40px; width: 420px; }
+.novo-g { margin: 8px 0 0; height: 32px; width: 100%; border-radius: 8px; display: flex; align-items: center; gap: 8px; padding: 0 8px; color: var(--fg3); font-size: 12px; } .novo-g:hover { background: var(--hover); color: var(--fg2); }
+.menu { position: absolute; left: 180px; width: 232px; background: var(--pop); border: 1px solid var(--linha); border-radius: 12px; box-shadow: var(--sombra); padding: 6px; z-index: 60; }
+.menu button { width: 100%; height: 32px; display: flex; align-items: center; gap: 10px; padding: 0 10px; border-radius: 8px; color: var(--fg); font-size: 13px; } .menu button:hover { background: var(--hover); } .menu button .ico { color: var(--fg3); } .menu .v { margin-left: auto; color: var(--acento) !important; } .menu kbd { margin-left: auto; }
+.m-sep { height: 1px; background: var(--linha); margin: 4px 0; } .m-tit { font-size: 11px; color: var(--fg3); padding: 4px 10px; }
+.pe { border-top: 1px solid var(--linha); padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.bia { height: 40px; border-radius: 10px; display: flex; align-items: center; gap: 8px; padding: 0 10px; color: var(--fg2); font-size: 13px; white-space: nowrap; border: 1px solid var(--linha); background: var(--bg); }
+.bia:hover { border-color: var(--fg3); } .bia b { font-weight: 600; color: var(--fg); } .bia .e { color: var(--fg3); } .bia .mini { margin-left: auto; } .bia .ico:first-child { color: var(--acento); } .bia.loc .ico:first-child, .bia.loc b { color: var(--local); }
+.pe .bia { margin-bottom: 4px; }
+.pe .lin2 { display: flex; align-items: center; gap: 8px; padding: 0 8px; height: 32px; font-size: 12px; color: var(--fg2); border-radius: 8px; cursor: pointer; white-space: nowrap; } .pe .lin2:hover { background: var(--hover); }
+.pe .lin2 .av { width: 22px; height: 22px; border-radius: 11px; background: var(--acento); color: #fff; font-weight: 600; display: grid; place-items: center; font-size: 11px; } .pe .lin2 .ib { margin-left: auto; } .ic2 { width: 22px; display: grid; place-items: center; color: var(--fg3); }
+.caixa .bia { height: 32px; border: 0; background: none; } .caixa .bia:hover { background: var(--hover); }
+
+/* palco */
+.palco { flex: 1; display: flex; min-width: 0; position: relative; }
+.esq { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; } .rolar { flex: 1; overflow: auto; } .zcaixa { padding: 0 24px 14px; }
+.painelP { width: 300px; border-left: 1px solid var(--linha); padding: 12px 16px; overflow: auto; flex: none; }
+.vz { flex: 1; display: grid; place-items: center; color: var(--fg2); }
+/* ficha do projeto (página de projeto do Claude Desktop) */
+.ficha { flex: 1; overflow: auto; display: grid; grid-template-columns: 1fr 320px; gap: 32px; padding: 40px 48px; align-content: start; }
+.f-meio { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.f-cab { display: flex; align-items: center; gap: 16px; } .big { width: 56px; height: 56px; border-radius: 28px; background: var(--bg3); display: grid; place-items: center; font-size: 22px; font-weight: 600; color: var(--fg2); flex: none; }
+.f-cab h1 { font: 600 26px/34px "Segoe UI Variable Display", "Segoe UI", sans-serif; display: flex; align-items: center; gap: 4px; } .f-cab h1 .ib { opacity: .6; } .f-cab .d { color: var(--fg3); font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.f-comeca { border: 1px solid var(--linha); border-radius: 20px; padding: 16px 12px 10px 20px; background: var(--bg); box-shadow: 0 1px 6px rgba(32,33,36,.12); } .f-comeca .ph { color: var(--fg3); min-height: 48px; }
+.f-comeca { cursor: text; transition: border-color .15s, box-shadow .15s; } .f-comeca:focus-within { border-color: color-mix(in srgb, var(--acento) 60%, var(--linha)); } .f-comeca .f-lin { cursor: default; }
+.f-comeca textarea.f-txt { display: block; width: 100%; height: 48px; max-height: 192px; border: 0; outline: 0; resize: none; background: transparent; font: inherit; line-height: 24px; color: var(--fg); padding: 0; margin: 0; overflow: hidden; } .f-comeca textarea.f-txt::placeholder { color: var(--fg3); opacity: 1; }
+/* voo apresentação → conversa: camada por cima com cópias das peças; a caixa vai até a caixa da conversa, o resto sai pela borda mais perto */
+.voo { position: fixed; pointer-events: none; z-index: 70; overflow: hidden; } .voo > * { position: absolute !important; margin: 0 !important; box-sizing: border-box; transition: transform .46s cubic-bezier(.5,0,.2,1), opacity .4s ease, left .46s cubic-bezier(.5,0,.2,1), top .46s cubic-bezier(.5,0,.2,1), width .46s cubic-bezier(.5,0,.2,1), height .46s cubic-bezier(.5,0,.2,1), border-radius .46s; }
+.chega .rolar { animation: chega .5s ease-out; } @keyframes chega { from { opacity: 0; transform: translateY(12px); } }
+.f-lin { display: flex; align-items: center; gap: 8px; } .f-lin .vao { flex: 1; } .f-lin .bia { border: 0; background: none; height: 32px; margin-left: -8px; } .f-lin .c-btn kbd { opacity: .7; }
+.f-aviso { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border-radius: 12px; background: color-mix(in srgb, #e37400 12%, transparent); } .f-aviso .ico { color: #e37400; margin-top: 2px; } .f-aviso small { display: block; color: var(--fg3); font-size: 12px; }
+.f-tit { font-size: 12px; font-weight: 600; color: var(--fg3); margin-top: 8px; }
+.f-lado { display: flex; flex-direction: column; gap: 12px; }
+.f-card { border: 1px solid var(--linha); border-radius: 14px; padding: 12px 14px; background: var(--bg2); }
+.f-ct { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; height: 32px; } .f-ct .ico { color: var(--fg3); } .f-ct .ib, .f-ct .q { margin-left: auto; } .f-ct .q { color: var(--fg3); font-weight: 400; }
+.f-cx { font-size: 11px; color: var(--fg3); font-family: Consolas, monospace; } .f-tx { color: var(--fg2); font-size: 13px; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.f-mem { display: flex; align-items: center; gap: 8px; height: 32px; font-size: 13px; color: var(--fg); border-radius: 8px; padding: 0 6px; margin: 0 -6px; cursor: pointer; } .f-mem:hover { background: var(--hover); } .f-mem .ico { color: var(--fg3); width: 14px; height: 14px; } .f-mem small { margin-left: auto; color: var(--fg3); font-size: 11px; }
+.ficha .j-lista { display: flex; flex-direction: column; border: 1px solid var(--linha); border-radius: 12px; overflow: hidden; }
+.ficha .j-it { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px 8px 6px 14px; border-bottom: 1px solid var(--linha); color: var(--fg2); } .ficha .j-it:last-child { border-bottom: 0; }
+.ficha .j-it span { flex: 1; color: var(--fg); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .ficha .j-it small { color: var(--fg3); font-size: 12px; white-space: nowrap; }
+.f-vazio { color: var(--fg3); font-size: 13px; padding: 12px 0; }
+
+.bia b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; } .bia { min-width: 0; }   /* nome de modelo comprido não estoura o botão */
+.voo .f-comeca .f-lin { transition: opacity .18s; } .voo.anda .f-comeca .f-lin { opacity: 0; }
+/* Para testar (25/10): cabeçalho clicável, lista com caixas */
+.tst-cab { width: 100%; background: none; border: 0; padding: 0; color: inherit; font: inherit; font-weight: 600; text-align: left; cursor: pointer; } .tst-cab .q { margin-left: auto; } .tst-cab .chev { margin-left: 6px; display: grid; place-items: center; }
+.tst-res { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--fg2); } .tst-res span { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .tst-res small { color: var(--fg3); flex: none; }
+.tst-it { cursor: pointer; gap: 10px; padding: 7px 10px; } .tst-it input { width: 16px; height: 16px; margin: 0; accent-color: var(--acento); flex: none; cursor: pointer; } .tst-it.feito span { color: var(--fg3); text-decoration: line-through; }
+.tst-dica { font-size: 11px; color: var(--fg3); margin-top: 6px; }
+
+.tst-lista.abrindo { animation: abre .22s ease-out; overflow: hidden; } .tst-it span { transition: color .2s; } .tst-it input { transition: transform .12s; } .tst-it input:active { transform: scale(.85); }
+.tst-cab .chev .ico { transition: transform .15s; }
+/* menu curto da IA (25/10): Claude e IA Local + engrenagem; abre do lado do botão (interface-web §2: surge-m) */
+.iam { position: fixed; z-index: 150; width: 300px; padding: 6px; border-radius: 14px; background: var(--pop); border: 1px solid var(--linha); box-shadow: var(--sombra); animation: surge-m .16s cubic-bezier(.2,.9,.3,1.2); }
+.iam-it { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 6px 0 8px; border-radius: 10px; cursor: pointer; outline: none; transition: background-color .12s; }
+.iam-it:hover, .iam-it:focus-visible { background: var(--hover); } .iam-it:focus-visible { box-shadow: inset 0 0 0 2px var(--acento); }
+.iam-ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--acento) 16%, transparent); color: var(--acento); flex: none; }
+.iam-it.loc .iam-ic { background: color-mix(in srgb, var(--local) 16%, transparent); color: var(--local); }
+.iam-tx { flex: 1; min-width: 0; } .iam-tx b { display: block; font-size: 13px; } .iam-tx small { display: block; font-size: 11px; color: var(--fg3); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.iam-it.on .iam-tx b { color: var(--fg); } .iam-v { color: var(--ok); width: 14px; height: 14px; flex: none; }
+.iam-cfg { flex: none; color: var(--fg3); transition: transform .3s, color .12s; } .iam-cfg:hover { color: var(--fg); transform: rotate(60deg); }
+.iam-cad { color: var(--fg3); display: grid; place-items: center; } .iam-cad .ico { width: 14px; height: 14px; }
+.iam-sep { height: 1px; margin: 4px 8px; background: var(--linha); } .iam-loja { height: 46px; }
+.f-mem span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .f-mem small { white-space: nowrap; flex: none; }   /* 26/10: tela pequena não quebra a linha */
+/* ícone do .exe do projeto (27/10): no lugar da letra, sem o fundo colorido */
+img.pico { width: 100%; height: 100%; object-fit: contain; display: block; cursor: pointer; }
+.pj .ic:has(.pico), .cv-ic:has(.pico) { background: transparent !important; padding: 2px; } .f-cab .big:has(.pico) { background: transparent !important; box-shadow: none !important; padding: 4px; }
+.ib.f-volta svg { transform: scaleX(-1); }   /* 28/10: back to choice screen, next to statistics */

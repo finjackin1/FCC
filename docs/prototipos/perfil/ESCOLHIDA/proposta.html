@@ -1,0 +1,51 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>B: Mapa da pasta</title><link rel="stylesheet" href="comum.css">
+<style>
+.mapa { width:320px; flex:none; border-right:1px solid var(--linha); padding:20px; display:flex; flex-direction:column; gap:8px; overflow:auto; }
+.tit { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--fg3); display:flex; justify-content:space-between; }
+.prop { display:flex; height:12px; border-radius:6px; overflow:hidden; gap:2px; margin-bottom:8px; } .prop i { display:block; min-width:4px; transition:opacity .2s; }
+.bloco { display:flex; gap:12px; align-items:center; width:100%; text-align:left; padding:8px 12px; border-radius:8px; border:1px solid var(--linha); background:var(--bg2); transition:transform .15s,background .15s,border-color .15s; min-height:56px; }
+.bloco:hover { transform:translateY(-1px); background:var(--hover); } .bloco.sel { border-color:var(--cor); background:color-mix(in srgb,var(--cor) 10%,var(--bg2)); }
+.bloco .q { width:12px; height:12px; border-radius:4px; background:var(--cor); flex:none; } .bloco .t { flex:1; min-width:0; } .bloco b { display:block; font-weight:600; } .bloco small { display:block; color:var(--fg3); font-size:12px; line-height:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .bloco .tam { color:var(--fg2); font-size:12px; flex:none; }
+.bloco .leva { width:16px; height:16px; flex:none; color:var(--acento); font-size:12px; text-align:center; }
+.fora { border-style:dashed; background:none; }
+.detalhe { flex:1; min-width:0; display:flex; flex-direction:column; }
+.detalhe .d-topo { height:52px; flex:none; display:flex; align-items:center; gap:8px; padding:0 20px; border-bottom:1px solid var(--linha); } .d-topo h2 { font-size:15px; margin:0; font-weight:600; } .d-topo .esp { flex:1; }
+.legenda { color:var(--fg3); font-size:12px; line-height:16px; }
+.acoes { margin-top:auto; padding-top:12px; display:flex; flex-direction:column; gap:8px; } .acoes .bt { width:100%; text-align:left; }
+.janela.corpo-mapa { flex-direction:row; }
+</style><body><div id="app"></div><script src="comum.js"></script><script>
+// B = ousado: a própria pasta do FCC vira a tela. Cada bloco é uma pasta real, com tamanho. Ao remover, o mapa mostra o que sai.
+const TITULO = { perfil:'Perfil', projects:'Projetos', conta:'Conta', ferramentas:'Ferramentas', sistema:'No sistema', enviar:'Enviar a um amigo', remover:'Remover o FCC', instalado:'Instalações' };
+function corpo() {
+  const m = S.sel;
+  if (m === 'projects') return `<div><div class="sec">Em projects <b>11</b></div>${lista([['Som','6,6 GB'],['Backup','1,3 GB'],['Narrador','784 MB'],['Painel','376 MB'],['Mesa','337 MB'],['Espelho','130 MB'],['Teclado','56 MB']], i => `<div class="lin"><div class="t"><b>${i[0]}</b></div><span class="tam">${i[1]}</span></div>`)}<div class="dica-lin">Projetos fora do perfil: ao trocar de PC, copie as duas pastas.</div></div>`;
+  if (m === 'conta') return `<div><div class="aviso ok"><span class="ponto ok"></span><div class="t">Os logins ficam aqui, separados do perfil<small>Enviar o perfil a alguém nunca leva a sua conta.</small></div></div><div class="sec">Contas</div>${lista(D.contas, i => `<div class="lin"><span class="ponto ${i[2]}"></span><div class="t"><b>${i[0]}</b><small>${i[1]}</small></div></div>`)}</div>`;
+  if (m === 'ferramentas') { const v = S.v; S.v = ''; const h = `<div><div class="sec">Programas nesta pasta <b>3,1 GB</b></div>${lista(D.dentro, i => `<div class="lin"><div class="t"><b>${i[0]}</b><small>${i[1]}</small></div><span class="tam">${i[2]}</span>${i[3] ? '<span class="tag">Essencial</span>' : '<button class="bt lev" data-a="tirar">Remover</button>'}</div>`)}</div>`; S.v = v; return h; }
+  if (m === 'sistema' || m === 'instalado') return S.v === 'vazio' ? Comum.instalado() : `<div><div class="dica-lin" style="margin:0 0 12px">Fora da pasta do FCC. Removendo o FCC, isto continua no PC.</div>${lista(D.sistema, i => `<div class="lin"><div class="t"><b>${i[0]}</b><small>${i[1]}</small></div><span class="tag">${i[2]}</span><button class="bt lev" data-a="desinst" data-dica="Abre o desinstalador desse programa">Desinstalar</button><button class="bt lev" data-a="ignorar" data-dica="Tira da lista sem desinstalar">Ignorar</button></div>`)}</div>`;
+  return Comum[m]();
+}
+function botoes() {
+  if (S.sel === 'enviar' && !S.v) return `<button class="bt pri" data-a="ir:enviar.pronto">Preparar cópia</button>`;
+  if (S.sel === 'remover' && !S.v) return Comum.botaoRemover();
+  return '';
+}
+function desenhar() {
+  S.sel = S.t; const rem = S.sel === 'remover', env = S.sel === 'enviar';
+  const opac = b => rem ? 1 : env ? (b.id === 'perfil' ? 1 : .3) : 1;
+  return `<div class="trilho"><i></i><i></i><i></i></div><div class="area"><div class="janela corpo-mapa">
+  <div class="mapa">
+    <div class="tit"><span>Pasta do FCC</span><span>15,1 GB</span></div>
+    <div class="prop" data-dica="Espaço de cada pasta">${D.blocos.map(b => `<i style="flex:${b.gb};background:${b.cor};opacity:${opac(b)}"></i>`).join('')}</div>
+    ${D.blocos.map(b => `<button class="bloco ${S.sel===b.id?'sel':''}" style="--cor:${b.cor};opacity:${opac(b)}" data-a="ir:${b.id}" data-dica="${b.d}"><span class="q"></span><span class="t"><b>${b.n}</b><small>${b.d}</small></span><span class="tam">${b.tam}</span></button>`).join('')}
+    <div class="tit" style="margin-top:12px"><span>Fora do FCC</span></div>
+    <button class="bloco fora ${S.sel==='sistema'?'sel':''}" style="--cor:var(--c-sis)" data-a="ir:sistema"><span class="q"></span><span class="t"><b>No sistema</b><small>O que foi instalado no Windows</small></span><span class="tam">${S.v==='vazio'?'0':D.sistema.length}</span></button>
+    <div class="acoes">
+      <button class="bt ${env?'pri':''}" data-a="ir:enviar" data-dica="Gera uma cópia sem nada pessoal">Enviar a um amigo</button>
+      <button class="bt per" data-a="ir:remover" data-dica="Mostra o que sai e o que fica antes de confirmar">Remover o FCC</button>
+    </div>
+  </div>
+  <div class="detalhe"><div class="d-topo"><h2>${TITULO[S.sel]}</h2><span class="esp"></span>${botoes()}</div><div class="corpo ${S.entra?'entra':''}">${corpo()}</div></div>
+</div></div>`;
+}
+iniciar(desenhar);
+</script></body></html>

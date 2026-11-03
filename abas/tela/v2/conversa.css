@@ -1,0 +1,99 @@
+/* Conversa — ESCOLHIDA (23/10/2026). O MESMO arquivo no protótipo e no programa (o protótipo desenha a conversa com o chat.js do
+   programa). Vem do chat aprovado em 21/10 (proposta C), com as cores fixas trocadas pelas cores do tema (claro e escuro). */
+.chatC { position: absolute; inset: 0; display: flex; }
+.chatC .esq { flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative; }
+.chatC .rolar { flex: 1; overflow: auto; }
+.chatC .col { max-width: 680px; margin: 0 auto; padding: 28px 24px 16px; display: flex; flex-direction: column; gap: 14px; }
+.chatC .col[hidden] { display: none; }
+.chatC .itens, .chatC .slot { display: contents; }
+/* cada mensagem é um bloco: fora da vista o navegador não desenha (conversa longa leve); a margem negativa com o mesmo recuo deixa sombra e recuos à mostra */
+.chatC .c-bl { display: flex; flex-direction: column; gap: 14px; margin: -8px; padding: 8px; content-visibility: auto; contain-intrinsic-size: auto 64px; }
+.chatC .c-bl:nth-last-child(-n+4) { content-visibility: visible; }
+.claude-ast { color: var(--acento); }
+.c-eu { align-self: flex-end; max-width: 85%; background: var(--bg3); border-radius: 18px 18px 4px 18px; padding: 10px 16px; white-space: pre-wrap; position: relative; }
+.c-ed { position: absolute; left: -36px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center; color: var(--fg3); opacity: 0; }
+.c-eu:hover .c-ed, .c-ed:focus-visible { opacity: 1; } .c-ed:hover { background: var(--hover); color: var(--fg2); } .c-ed .ico { width: 14px; height: 14px; }
+.c-filas { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; } .c-nafila { background: transparent; border: 1px dashed var(--linha); color: var(--fg2); } .c-nafila .c-ed { opacity: 1; }
+.c-fila-t { display: block; margin-top: 4px; font-size: 12px; line-height: 16px; color: var(--fg3); white-space: normal; }
+.c-ia { line-height: 22px; } .c-ia ul { padding-left: 22px; } .c-ia li + li { margin-top: 2px; }
+.c-ia > * + * { margin-top: 10px; }
+.c-ia h1 { font-size: 18px; line-height: 26px; font-weight: 600; } .c-ia h2 { font-size: 16px; line-height: 24px; font-weight: 600; } .c-ia h3, .c-ia h4 { font-size: 14px; line-height: 22px; font-weight: 600; }
+.c-ia ol { padding-left: 22px; } .c-ia li > p + * { margin-top: 4px; }
+.c-ia code { font: 13px/20px "Cascadia Mono", Consolas, monospace; background: var(--bg3); padding: 1px 4px; border-radius: 4px; }
+.c-ia pre { background: var(--bg2); border: 1px solid var(--linha); border-radius: 12px; padding: 10px 14px; overflow: auto; } .c-ia pre code { background: none; padding: 0; }
+.c-ia table { border-collapse: collapse; } .c-ia th, .c-ia td { border: 1px solid var(--linha); padding: 4px 10px; text-align: left; vertical-align: top; } .c-ia th { background: var(--bg2); font-weight: 600; }
+.c-ia a { color: var(--local); } .c-ia blockquote { border-left: 3px solid var(--linha); padding-left: 12px; color: var(--fg2); } .c-ia hr { border: 0; border-top: 1px solid var(--linha); }
+.c-ia, .c-eu, .c-det, .c-perm .oq { user-select: text; cursor: text; }
+.c-lin { align-self: flex-start; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px 0 6px; margin-left: -6px; border-radius: 14px; color: var(--fg3); font-size: 13px; }
+.c-lin:hover { background: var(--hover); color: var(--fg2); } .c-lin .ico { width: 14px; height: 14px; } .c-lin .seta { transition: transform .15s; } .c-lin.ab .seta { transform: rotate(90deg); }
+.c-det { margin: -10px 0 0 6px; padding: 4px 0 4px 14px; border-left: 2px solid var(--linha); color: var(--fg2); font-size: 13px; line-height: 20px; }
+.c-det div { display: flex; gap: 8px; } .c-det .r { color: var(--fg3); margin-left: auto; }
+.c-troca { align-self: center; font-size: 12px; color: var(--fg3); display: flex; align-items: center; gap: 8px; } .c-troca::before, .c-troca::after { content: ''; width: 48px; height: 1px; background: var(--linha); }
+.c-perm { border: 1px solid var(--linha); border-radius: 16px; padding: 14px 16px; background: var(--pop); box-shadow: 0 1px 6px rgba(32,33,36,.12); }
+.c-perm .tt { display: flex; align-items: center; gap: 8px; font-weight: 600; } .c-perm .tt .ico { color: var(--acento); }
+.c-perm .oq { margin: 6px 0 12px 24px; color: var(--fg2); } .c-perm .oq span { color: var(--fg3); font-size: 12px; margin-left: 6px; }
+.c-perm .bs { display: flex; gap: 8px; margin-left: 24px; } .c-perm .bs.perg { flex-wrap: wrap; margin: 8px 0 12px 24px; } .c-perm .oq.plano { max-height: 320px; overflow: auto; color: var(--fg); }
+.c-feito { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg3); } .c-feito .ico { width: 14px; height: 14px; } .c-feito.c-erro { color: var(--vm); }
+.c-trab { display: flex; align-items: flex-start; gap: 8px; color: var(--fg3); } .c-trab .claude-ast { font-size: 18px; display: inline-block; width: 20px; line-height: 20px; text-align: center; flex: none; }
+.c-trab-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.c-ativ { display: flex; align-items: center; gap: 4px; height: 20px; max-width: 560px; color: var(--fg2); border-radius: 6px; } .c-ativ:hover { color: var(--fg); }
+.c-ativ-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .c-ativ .seta { width: 14px; height: 14px; flex: none; transition: transform .15s; } .c-ativ.ab .seta { transform: rotate(90deg); }
+.c-trab-s { font-size: 12px; line-height: 16px; color: var(--fg3); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-abrindo { position: absolute; inset: 0; display: grid; place-items: center; }
+/* caixa de mensagem */
+.compC-z { flex: none; padding: 0 24px 14px; }
+.compC { max-width: 680px; margin: 0 auto; border: 1px solid var(--linha); border-radius: 24px; padding: 10px 8px 8px 20px; box-shadow: 0 1px 6px rgba(32,33,36,.12); position: relative; background: var(--pop); }
+.compC textarea.txt { display: block; width: 100%; height: 24px; max-height: 168px; border: 0; outline: 0; resize: none; background: transparent; font: inherit; line-height: 24px; color: inherit; padding: 0 12px 0 0; margin: 0; overflow: auto; }
+.compC textarea.txt::placeholder { color: var(--fg3); opacity: 1; }
+.compC .lin { display: flex; align-items: center; gap: 4px; margin-top: 4px; margin-left: -12px; }
+.compC .ib { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--fg2); } .compC .ib:hover { background: var(--hover); }
+.compC .tk { height: 32px; padding: 0 10px; border-radius: 16px; font-size: 12px; color: var(--fg3); white-space: nowrap; display: flex; align-items: center; } .compC .tk:hover { background: var(--hover); color: var(--fg2); }
+.compC .lin .esp { flex: 1; }   /* empurra tokens + IA + enviar para a direita (23/10) */ .compC .tk.vel { cursor: default; padding-left: 0; } .compC .tk.vel:hover { background: none; color: var(--fg3); }
+.compC .lin .bia { height: 32px; border: 0; background: none; } .compC .lin .bia:hover { background: var(--hover); }
+.compC .env { width: 36px; height: 36px; border-radius: 50%; background: var(--acento); color: #fff; display: grid; place-items: center; flex: none; } .compC .env.off { background: var(--bg3); color: var(--fg3); cursor: default; } .compC .env.parar { background: var(--fg); color: var(--bg); }
+.compC .ed-aviso { order: -1; font-size: 12px; color: var(--acento); padding: 0 8px; white-space: nowrap; }
+.compC > .pop.cmds { position: absolute; bottom: 56px; left: 8px; width: 360px; max-height: 400px; overflow: auto; background: var(--pop); border: 1px solid var(--linha); border-radius: 16px; box-shadow: var(--sombra); padding: 8px; z-index: 60; }
+.compC > .pop.cmds .pop-it { display: grid; grid-template-columns: 1fr; padding: 4px 8px; border-radius: 8px; cursor: pointer; } .compC > .pop.cmds .pop-it.hl, .compC > .pop.cmds .pop-it:hover { background: var(--hover); }
+.compC > .pop.cmds .pop-n { font-weight: 500; } .compC > .pop.cmds .pop-d { font-size: 12px; color: var(--fg3); }
+.compC > .pop.cmds .pop-rod { display: flex; justify-content: space-between; padding: 8px 8px 2px; margin-top: 8px; border-top: 1px solid var(--linha); color: var(--fg3); font-size: 11px; }
+.compC.fim { display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 20px; color: var(--fg2); } .compC.fim .c-btn { margin-left: auto; }
+.termC { flex: 1; overflow: auto; background: var(--bg); position: relative; }
+/* cortina do limite de uso */
+.chatC .cortina { position: absolute; inset: 0; z-index: 55; background: color-mix(in srgb, var(--bg) 80%, transparent); display: flex; align-items: center; justify-content: center; }
+.chatC .cortina:empty { display: none; }
+.ct-caixa { width: 440px; background: var(--pop); border: 1px solid var(--linha); border-radius: 16px; box-shadow: var(--sombra); padding: 24px 28px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.ct-ic .ico { width: 32px; height: 32px; color: var(--acento); } .ct-tit { font: 600 18px/24px "Segoe UI Variable Display", "Segoe UI", sans-serif; color: var(--fg); }
+.ct-txt { color: var(--fg2); line-height: 20px; } .ct-txt b { color: var(--fg); } .ct-caixa .c-btn { margin-top: 6px; } .ct-caixa .c-btn .ico { width: 16px; height: 16px; } .ct-dica { font-size: 12px; color: var(--fg3); }
+/* painel do projeto */
+.painelC { width: 300px; flex: none; border-left: 1px solid var(--linha); background: var(--bg2); overflow: auto; padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.painelC .cab { display: flex; align-items: center; height: 32px; font-weight: 600; font-size: 14px; } .painelC .cab .ib { margin-left: auto; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: var(--fg2); } .painelC .cab .ib:hover { background: var(--hover); }
+.painelC h4 { font-size: 12px; font-weight: 600; color: var(--fg3); margin: 12px 0 6px; display: flex; } .painelC h4 span { margin-left: auto; color: var(--fg3); font-weight: 400; }
+.painelC .sub { display: flex; align-items: center; gap: 8px; color: var(--fg3); font-size: 12px; }
+.painelC .txt { color: var(--fg); line-height: 18px; }
+.painelC .item { display: flex; align-items: flex-start; gap: 4px; padding: 6px 4px 6px 10px; border-radius: 10px; background: var(--bg); border: 1px solid var(--linha); margin-bottom: 4px; }
+.painelC .item .it-t { flex: 1; color: var(--fg); line-height: 18px; padding-top: 3px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.painelC .item button { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: var(--fg3); flex: none; } .painelC .item button .ico { width: 14px; height: 14px; }
+.painelC .item .ok:hover, .painelC .item.ok .ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); } .painelC .item .no:hover, .painelC .item.no .no { background: color-mix(in srgb, var(--vm) 18%, transparent); color: var(--vm); }
+.painelC .item.ok { border-color: var(--ok); } .painelC .item.no { border-color: var(--vm); }
+.painelC .pc-dica { color: var(--fg3); font-size: 12px; margin-top: 4px; line-height: 16px; }
+.painelC .ats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.painelC .ats button, .painelC .rod button { height: 32px; border-radius: 16px; border: 1px solid var(--linha); background: transparent; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--fg2); } .painelC .ats button:hover, .painelC .rod button:hover { background: var(--hover); }
+.painelC .ats button .ico { width: 14px; height: 14px; color: var(--fg3); }
+.painelC .peds { display: flex; flex-wrap: wrap; gap: 6px; }
+.painelC .peds button { height: 28px; padding: 0 12px; border-radius: 14px; background: transparent; border: 1px solid var(--linha); color: var(--local); font-size: 12px; } .painelC .peds button:hover { background: var(--hover); }
+.painelC .proj { width: 100%; height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 10px; border-radius: 10px; text-align: left; } .painelC .proj:hover { background: var(--hover); }
+.painelC .proj i { width: 10px; height: 10px; border-radius: 50%; flex: none; } .painelC .proj b { font-weight: 500; color: var(--fg); } .painelC .proj span { margin-left: auto; color: var(--fg3); font-size: 12px; }
+.painelC .rod { margin-top: auto; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; } .painelC .rod kbd { margin-left: auto; font: 11px "Segoe UI", sans-serif; color: var(--fg3); }
+.mostra-painel { position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--fg2); z-index: 5; } .mostra-painel:hover { background: var(--hover); }
+.c-sai { display: flex; flex-direction: column; gap: 14px; opacity: .4; }   /* editando: o que some ao reenviar */
+
+/* 30/10 attachments (dropped file = card like the Claude app): in the box above the text, and in the sent message */
+.c-anxs { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 12px 8px 0; white-space: normal; } .c-anxs:empty { display: none; }
+.c-eu .c-anxs { margin: 0 0 8px; justify-content: flex-end; } .c-eu.so-anx .c-anxs { margin: 0; } .c-eu .anx { background: var(--bg2); }
+.anx { position: relative; display: flex; align-items: center; gap: 10px; max-width: 240px; height: 52px; padding: 6px 14px 6px 6px; border: 1px solid var(--linha); border-radius: 12px; background: var(--bg2); cursor: default; user-select: none; }
+.anx > i, .anx > img { flex: none; width: 40px; height: 40px; border-radius: 8px; background: var(--bg3); }
+.anx > i { display: grid; place-items: center; font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .03em; color: var(--fg2); } .anx > img { object-fit: cover; }
+.anx-t { display: grid; gap: 2px; min-width: 0; line-height: 16px; } .anx-t b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .anx-t em { font-style: normal; font-size: 11px; color: var(--fg3); }
+.anx-x { position: absolute; top: -7px; right: -7px; width: 20px; height: 20px; padding: 0; border-radius: 10px; border: 1px solid var(--linha); background: var(--pop); color: var(--fg2); display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .12s; }
+.anx:hover .anx-x, .anx-x:focus-visible { opacity: 1; } .anx-x:hover { color: var(--fg); } .anx-x .ico { width: 12px; height: 12px; }
+.f-comeca .c-anxs { margin: 0 0 10px; }

@@ -1,0 +1,5 @@
+/* GERADO de ESCOLHIDA\proposta.html (moldura A "Por cima"); não editar aqui */
+/* A "Por cima" (segura, como as janelas que ele já escolheu): véu + janela no centro, do mesmo tamanho para todas. */
+.veu2 { position: absolute; inset: 0; background: rgba(0,0,0,.5); z-index: 80; display: grid; place-items: center; }
+.jan { width: 860px; height: 680px; background: var(--pop); border: 1px solid var(--linha); border-radius: 16px; box-shadow: var(--sombra); display: flex; flex-direction: column; overflow: hidden; } .jan.nova { animation: surge .18s ease-out; }
+.jan.ajuda { height: 440px; } @keyframes surge { from { transform: scale(.96); opacity: 0; } }

@@ -9,7 +9,7 @@ let falhas = 0; const ok = (c, t) => { console.log((c ? 'ok   ' : 'FALHA ') + t)
 
 (async () => {
   const d = fs.mkdtempSync(path.join(os.tmpdir(), 'fcc-ajud-')), pids = path.join(d, 'pids.txt');
-  // program copy with a name outside the console tools list: stands for FAH or a game
+  // program copy with a name outside the console tools list: stands for a game
   const prog = path.join(d, 'programa.exe'); fs.copyFileSync(process.execPath, prog);
   const neto = path.join(d, 'neto.js'), filho = path.join(d, 'filho.js');
   fs.writeFileSync(neto, `require('fs').appendFileSync(${JSON.stringify(pids)}, 'neto ' + process.pid + '\\n'); setInterval(() => {}, 1000);`);

@@ -11,13 +11,14 @@ const fs = require('fs');
 
 // 24/10 (user request): no Fable and no thinking above High in auto; High only while task needs it
 // 25/10 (user request): Low thinking is default for each model; Medium/High only for hard/big (thinking counts as output, the costly part)
-const ESCADA = [['haiku', 'low'], ['sonnet', 'low'], ['sonnet', 'medium'], ['opus', 'low'], ['opus', 'medium'], ['opus', 'high']];
-const NOME = { haiku: 'Haiku 5.5', sonnet: 'Sonnet 5.5', opus: 'Opus 5.5', fable: 'Fable 5.1' }, ESF = { low: 'Baixo', medium: 'Médio', high: 'Alto', xhigh: 'Muito alto', max: 'Máximo' };
+// 24/11 (user request): Sonnet first (Sonnet high ≈ Opus medium, much cheaper); Opus only for big/very hard work
+const ESCADA = [['haiku', 'low'], ['sonnet', 'low'], ['sonnet', 'medium'], ['sonnet', 'high'], ['opus', 'medium'], ['opus', 'high']];
+const NOME = { haiku: 'Haiku 5.5', sonnet: 'Sonnet 5.5', opus: 'Opus 5.5', fable: 'Fable 5.2' }, ESF = { low: 'Baixo', medium: 'Médio', high: 'Alto', xhigh: 'Muito alto', max: 'Máximo' };
 // type → initial step (learning adds or subtracts); LARGEST match wins
 const TIPOS = [
-  ['grande', 5, /\b(projeto novo|do zero|reescrev\w*|refa(z|zer|ça) tudo|sistema (inteiro|completo)|arquitetura|migr(ar|e|ação) (tudo|o projeto))\b/i],
-  ['difícil', 4, /(n[ãa]o funciona|bug|trav(a|ou|ando)|crash|fecha sozinho|investig|engenharia reversa|decompil|hook|otimiz|desempenho|lento|demora|refator|vazamento|race|concorr)/i],
-  ['tarefa', 3, /\b(fa[çc]a|faz|cri(e|a|ar)|implement\w*|adicion\w*|coloc\w*|mud(e|ar)|troqu\w*|corrij\w*|consert\w*|arrum\w*|remov\w*|tir(e|ar)|ajust\w*|melhor(e|ar)|build|empacot\w*|instal\w*|escrev\w*|gere|gerar|configur\w*|integr\w*)\b/i],
+  ['grande', 4, /\b(projeto novo|do zero|reescrev\w*|refa(z|zer|ça) tudo|sistema (inteiro|completo)|arquitetura|migr(ar|e|ação) (tudo|o projeto))\b/i],
+  ['difícil', 3, /(n[ãa]o funciona|bug|trav(a|ou|ando)|crash|fecha sozinho|investig|engenharia reversa|decompil|hook|otimiz|desempenho|lento|demora|refator|vazamento|race|concorr)/i],
+  ['tarefa', 2, /\b(fa[çc]a|faz|cri(e|a|ar)|implement\w*|adicion\w*|coloc\w*|mud(e|ar)|troqu\w*|corrij\w*|consert\w*|arrum\w*|remov\w*|tir(e|ar)|ajust\w*|melhor(e|ar)|build|empacot\w*|instal\w*|escrev\w*|gere|gerar|configur\w*|integr\w*)\b/i],
   ['pergunta', 1, /(\?\s*$|^(o que|como|por ?que|qual|quais|quando|onde|quanto|explic\w*|me (diz|fala|explica)|existe|dá pra|da pra|é possível))/i],
   ['papo', 0, /^(oi|ol[áa]|bom dia|boa (tarde|noite)|obrigad\w*|valeu|blz|beleza|kk+|haha|tchau|t[áa] bom)\b/i],
 ];
@@ -36,10 +37,10 @@ module.exports = function (arq, logApp) {
   function tipoDe(txt, ant) {
     const s = String(txt || '').trim();
     if (CURTA.test(s) && ant) return { tipo: ant.tipo, manter: true };
-    if (CONTINUAR.test(s)) return { tipo: ant ? ant.tipo : 'tarefa', base: ant ? null : 3 };
+    if (CONTINUAR.test(s)) return { tipo: ant ? ant.tipo : 'tarefa', base: ant ? null : 2 };
     let tipo = null, base = -1;
     for (const [n, b, re] of TIPOS) if (b > base && re.test(s)) { tipo = n; base = b; }
-    if (!tipo) { tipo = s.length < 80 ? 'pergunta' : 'tarefa'; base = s.length < 80 ? 1 : 3; }
+    if (!tipo) { tipo = s.length < 80 ? 'pergunta' : 'tarefa'; base = s.length < 80 ? 1 : 2; }
     const extra = (s.length > 900 ? 1 : 0) + ((s.match(/^\s*([-*•]|\d+[.)])\s/mg) || []).length >= 3 ? 1 : 0);    // long request or with several items
     return { tipo, base: Math.min(ESCADA.length - 1, base + extra) };
   }
@@ -55,7 +56,7 @@ module.exports = function (arq, logApp) {
     let [modelo, esf] = ESCADA[alvo];
     const agora = degrauDe(c.modelo, c.esf);
     // big conversation: lowering model rereads all without cache (costs more); only thinking goes down
-    if (modelo !== c.modelo && alvo < agora && (c.auto.ctx || 0) > 25000) { modelo = c.modelo; esf = ESCADA[alvo][1]; if (!ESCADA.some(x => x[0] === modelo && x[1] === esf)) esf = c.esf; }
+    if (modelo !== c.modelo && alvo < agora && (c.auto.ctx || 0) > 80000) { modelo = c.modelo; esf = ESCADA[alvo][1]; if (!ESCADA.some(x => x[0] === modelo && x[1] === esf)) esf = c.esf; }
     c.auto.ant = { tipo: k.tipo, degrau: alvo, t: Date.now(), ferr: 0, modelo, esf, trocas: 0 };
     ler().hist.push({ q: Date.now(), tipo: k.tipo, modelo, esf }); salvar();
     if (modelo === c.modelo && esf === c.esf) return null;
@@ -65,14 +66,14 @@ module.exports = function (arq, logApp) {
   function escalar(c) {
     const a = c.auto.ant; if (!a || a.escalou) return null;
     a.ferr = (a.ferr || 0) + 1;
-    if (a.ferr < 15 || degrauDe(c.modelo, c.esf) >= 3) return null;
+    const d = degrauDe(c.modelo, c.esf); if (a.ferr < 15 || d >= 3) return null;
     a.escalou = true; ajustar(a.tipo, +1, 'virou trabalho longo');
-    return { modelo: 'opus', esf: 'medium', aviso: `Automático: ${NOME.opus} · pensamento Médio (o pedido ficou maior do que parecia)` };
+    const [modelo, esf] = ESCADA[d + 1]; return { modelo, esf, aviso: `Automático: ${NOME[modelo]} · pensamento ${ESF[esf]} (o pedido ficou maior do que parecia)` };
   }
   // end of reply: solved easily on high step, several times → down a step for that type
   function fim(c, uso) {
     const a = c.auto.ant; if (!a) return; c.auto.ctx = uso && uso.ent || c.auto.ctx;
-    if (a.degrau >= 3 && (a.ferr || 0) <= 2 && uso && uso.sai < 1500) { const t = T(a.tipo); t.folga++; if (t.folga >= 6) ajustar(a.tipo, -1, 'resolveu com folga 6 vezes'); else salvar(); }
+    if (a.degrau >= 2 && (a.ferr || 0) <= 2 && uso && uso.sai < 1500) { const t = T(a.tipo); t.folga++; if (t.folga >= 6) ajustar(a.tipo, -1, 'resolveu com folga 6 vezes'); else salvar(); }
   }
   // user switched by hand: last request type learns where user wants it
   function trocouNaMao(c, modelo, esf) {

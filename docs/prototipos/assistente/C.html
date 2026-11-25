@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR" data-tema="escuro"><head><meta charset="utf-8"><title>Assistente C: Barra central</title>
+<link rel="stylesheet" href="comum.css">
+<style>
+/* janela fixa 640x400, no meio da tela, um pouco acima do centro (estilo busca rápida) */
+#assist { position: absolute; left: calc(50% + 180px); top: 18%; width: 640px; height: 400px; margin-left: -320px; display: flex; flex-direction: column; border-radius: 16px; overflow: hidden;
+  background: var(--vidro); backdrop-filter: blur(24px); border: 1px solid var(--linha); box-shadow: var(--sombra); animation: nasce .25s cubic-bezier(.2,.9,.3,1.1); }
+@keyframes nasce { from { opacity: 0; transform: translateY(-10px) scale(.97); } }
+#assist.saindo { animation: sai .5s ease-in forwards; } @keyframes sai { to { opacity: 0; transform: scale(.96); } }
+.topo { height: 64px; padding: 0 10px 0 12px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--linha); }
+.topo form { flex: 1; display: flex; gap: 6px; }
+.topo .campo { border: 0; background: none; font-size: 17px; padding: 8px 4px; border-radius: 8px; }
+.linha-voz { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; font-size: 17px; }
+.linha-voz [data-fala] { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--fg3); }
+.linha-voz [data-fala][data-quem="voce"] { color: var(--fg); }
+#assist[data-modo="voz"] .topo form, #assist[data-modo="texto"] .linha-voz { display: none; }
+#assist[data-estado="parado"] .ondas, #assist[data-estado="pensando"] .ondas { display: none; }
+#assist[data-estado="falando"] .linha-voz [data-fala] { display: none; } #assist[data-estado="falando"] .ondas { flex: 1; }
+[data-lista] { flex: 1; overflow: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.msg.voce { color: var(--fg3); font-size: 13px; } .msg.voce::before { content: "Você: "; }
+.msg.ia { font-size: 15px; line-height: 1.55; animation: sobe .3s ease-out; }
+.acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.acoes button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; text-align: left; color: var(--fg2); transition: background-color .15s, transform .15s; }
+.acoes button:hover { background: var(--hover); transform: translateY(-1px); }
+.acoes button span { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: color-mix(in srgb, var(--acento) 16%, transparent); color: var(--acento); flex: none; }
+.acoes svg { width: 16px; height: 16px; }
+[data-lista]:has(.msg) .acoes { display: none; }
+.rodape { height: 36px; padding: 0 12px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--linha); font-size: 12px; color: var(--fg3); }
+.rodape .esp { flex: 1; }
+</style></head><body>
+<div class="app-fundo"><i></i><i></i><i></i><i></i></div>
+<div class="barra-win"><span></span><span class="fcc"></span><span></span><span></span></div>
+
+<div class="proto">
+  <h1>C · Barra central</h1>
+  <p>Aparece no meio da tela, como uma busca rápida: linha grande em cima (você fala ou escreve), resposta embaixo. Some ao clicar fora ou fechar.</p>
+  <p>Tamanho fixo: 640 × 400 (16:10).</p>
+  <p>Bom para: pedidos rápidos com resposta grande e fácil de ler. Fraco para: tapa o meio da tela enquanto fala; histórico curto.</p>
+  <p class="fontes">Fontes: janela rápida do ChatGPT no desktop (atalho abre barra flutuante); Spotlight do macOS; PowerToys Command Palette do Windows.</p>
+  <nav><a href="A.html">A</a><a href="B.html">B</a><a href="C.html" class="sel">C</a></nav>
+</div>
+
+<div id="assist" data-estado="parado" data-modo="voz">
+  <div class="topo">
+    <button class="orbe" data-mic title="Falar (ou diga “Ei, Claude”)" data-ico="mic"></button>
+    <div class="linha-voz"><span data-fala></span><div class="ondas" data-ondas="40"></div></div>
+    <form data-form><input class="campo" placeholder="Escreva para o Claude"><button class="ib" title="Enviar" data-ico="enviar"></button></form>
+    <div class="modo" data-modo><button data-m="voz" class="sel" title="Responder falando">Voz</button><button data-m="texto" title="Responder por escrito">Texto</button></div>
+  </div>
+  <div data-lista>
+    <div class="acoes">
+      <button title="Recortar parte da tela e perguntar"><span data-ico="tela"></span>Analisar parte da tela</button>
+      <button title="Resumir a página aberta no navegador"><span data-ico="abrir"></span>Resumir esta página</button>
+      <button title="Melhorar o texto copiado e devolver pronto para colar"><span data-ico="enviar"></span>Melhorar texto copiado</button>
+      <button title="Analisar o vídeo da aba aberta"><span data-ico="play"></span>Analisar vídeo da aba</button>
+    </div>
+  </div>
+  <div class="rodape"><span class="ast" style="color:var(--acento)">✻</span> Claude · modelo pequeno no papo<span class="esp"></span>
+    <button class="ib" title="Abrir esta conversa no FCC" data-ico="abrir"></button><button class="ib fechar" data-fechar title="Fechar" data-ico="x"></button></div>
+</div>
+<script src="comum.js"></script>
+<script>
+const acoes = document.querySelector(".acoes");
+window.aoMudar = () => { const l = document.querySelector("[data-lista]"); if (!l.contains(acoes)) l.prepend(acoes); };
+</script>
+</body></html>

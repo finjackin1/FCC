@@ -13,6 +13,7 @@
     lapis: '<path d="M10.5 3.5l2 2L6 12H4v-2z"/>', mapa: '<path d="M2 4l4-1.5 4 1.5 4-1.5v9.5l-4 1.5-4-1.5-4 1.5z M6 2.5v9.5 M10 4v9.5"/>', raio: '<path d="M9 1.5L3.5 9H8l-1 5.5L12.5 7H8z"/>',
     mud: '<path d="M4 2.5v11 M12 2.5v11 M2 5h4 M10 11h4 M10 5h4"/>', term: '<path d="M2.5 3.5h11v9h-11z M5 7l2 1.5L5 10 M8.5 10.5h3"/>', arq: '<path d="M4 2h5l3 3v9H4z M9 2v3h3"/>',
     proj: '<path d="M2.5 4.5h4l1.5 1.5h5.5v6.5h-11z"/>', rel: '<circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/>', lado: '<path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/>',
+    balao: '<path d="M5.5 1.5h5a1.5 1.5 0 011.5 1.5v10a1.5 1.5 0 01-1.5 1.5h-5A1.5 1.5 0 014 13V3a1.5 1.5 0 011.5-1.5z M7 12.5h2"/>', 
     olho: '<path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/>', mais: '<path d="M8 3.5v9 M3.5 8h9"/>', x: '<path d="M4 4l8 8M12 4l-8 8"/>',
     copia: '<path d="M5.5 5.5h7v7h-7z M3.5 10.5v-7h7"/>', split: '<path d="M2.5 3.5h11v9h-11z M8 3.5v9"/>', ok: '<path d="M3.5 8.5l3 3 6-7"/>', seta: '<path d="M6 4l4 4-4 4"/>', enviar: '<path d="M8 13V3 M4 7l4-4 4 4"/>',
   };
@@ -20,21 +21,20 @@
   M.ico4 = ico;
 
   // ---- demo data (the FCC conversation that "closed the coder loopholes" today) ----
-  const MODOS = [['perguntar', 'Perguntar antes', 'mao', 'Pede sua permissão para editar arquivos e rodar comandos'], ['editar', 'Aceitar edições', 'lapis', 'Edita arquivos sozinho; comandos ainda pedem permissão'],
-    ['planejar', 'Só planejar', 'mapa', 'Lê e monta um plano; não muda nada até você aprovar'], ['auto', 'Automático', 'raio', 'Decide sozinho o que é seguro; pede só o arriscado']];
+  const MODOS = [['perguntar', 'Perguntar antes', 'mao', 'Pede 1 permissão por cadeia para editar e rodar comandos'], ['auto', 'Automático', 'raio', 'Permite toda a cadeia sozinho; pede só ações perigosas']];
   const CTX = { usado: 76, total: 200, partes: [['Regras e memória', 14, 'var(--local)'], ['Conversa', 46, 'var(--acento)'], ['Resultados de ferramentas', 9, 'var(--amb)'], ['Sistema', 7, 'var(--fg3)']] };
   const ARQS = [
-    { f: 'abas\\local.js', a: 48, r: 9, h: [['@', 'turno() · linha 465'], [' ', 'const escritos = new Set();'], ['-', 'let rodouDepois = true, cobraRodar = 0;'], ['+', 'let rodouDepois = true, passou = true, cobraRodar = 0;'], ['+', 'const maxV = () => prog ? 30 : 14;'], [' ', ''],
+    { f: 'abas\\passagem.js', a: 48, r: 9, h: [['@', 'turno() · linha 465'], [' ', 'const escritos = new Set();'], ['-', 'let rodouDepois = true, cobraRodar = 0;'], ['+', 'let rodouDepois = true, passou = true, cobraRodar = 0;'], ['+', 'const maxV = () => prog ? 30 : 14;'], [' ', ''],
       ['@', 'portão do programador · linha 506'], ['-', 'if (!rodouDepois && cobraRodar < 2) {'], ['+', 'if (!passou && cobraRodar < 6) {'], [' ', '  cobraRodar++;'], ['+', '  // só entrega depois de um teste que passa'], [' ', '  cutucar(msg); continue;'], [' ', '}']] },
-    { f: 'abas\\ferramentas\\testar-local-programar.js', a: 98, r: 0, novo: true, h: [['@', 'arquivo novo'], ['+', "// Teste (30/10): o modo programador é REGRA, não conselho."], ['+', "'use strict';"], ['+', "const http = require('http');"]] },
+    { f: 'abas\\ferramentas\\testar-passagem.js', a: 98, r: 0, novo: true, h: [['@', 'arquivo novo'], ['+', "// Teste (30/10): o modo programador é REGRA, não conselho."], ['+', "'use strict';"], ['+', "const http = require('http');"]] },
     { f: 'casa\\memoria\\programar.md', a: 3, r: 1, h: [['@', 'linha 4'], ['-', '4. Falhou: leia o erro e corrija.'], ['+', '4. Falhou: leia o erro, corrija o CÓDIGO e rode de novo.'], ['+', '   Repita até dar OK.']] },
   ];
-  const AGEND = [['Resumo das pendências', 'seg a sex · 08:00', 'rodou hoje 08:00 · ok'], ['Prova da IA local', 'toda noite · 02:00', 'rodou hoje 02:00 · 3/20'], ['Faxina das pastas', 'domingo · 10:00', 'pulou dom 26/10 · PC desligado']];
+  const AGEND = [['Resumo das pendências', 'seg a sex · 08:00', 'rodou hoje 08:00 · ok'], ['Conferir os backups', 'toda noite · 02:00', 'rodou hoje 02:00 · ok'], ['Faxina das pastas', 'domingo · 10:00', 'pulou dom 26/10 · PC desligado']];
   const R = () => M.V4D || null, T = () => M.aba && M.aba();
   const ctx = () => (R() && R().ctx(T())) || CTX, arqs = () => (R() ? R().arqs(T()) : ARQS);
   const somaA = () => arqs().reduce((s, x) => s + x.a, 0), somaR = () => arqs().reduce((s, x) => s + x.r, 0);
 
-  const V40 = { modo: 'editar', vista: 'resumido', dock: 'projeto', arq: 0, com: [{ arq: 0, lin: 8, txt: 'Por que 6 e não 3 cobranças?' }], comAberto: null, lado: false, ladoResp: false, pop: '', isolada: true, split: false, voo: '',
+  const V40 = { modo: 'perguntar', vista: 'detalhado', dock: 'projeto', arq: 0, com: [{ arq: 0, lin: 8, txt: 'Por que 6 e não 3 cobranças?' }], comAberto: null, lado: false, ladoResp: false, pop: '', isolada: true, split: false, voo: '',
     ladoQ: 'O que "passou" quer dizer no portão?', ladoR: 'É o último teste rodado <b>depois</b> da última mudança no código: terminou sem erro e mostrou algo na tela. Rodar o arquivo sozinho, sem saída, não conta.', comTxt: 'Use a mesma regra no Rodar de .ps1' };
   S.v4 = Object.assign(JSON.parse(JSON.stringify(V40)), S.v4 || {});
   const v = S.v4;
@@ -44,7 +44,7 @@
   const anel = (p, tam = 18) => { const r = tam / 2 - 2, c = 2 * Math.PI * r; return `<svg class="v4-anel" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}"><circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" class="f"/><circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" class="u" stroke-dasharray="${(c * p / 100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${tam / 2} ${tam / 2})"/></svg>`; };
   const pct = () => { const c = ctx(); return c.total ? Math.round(c.usado / c.total * 100) : 0; };
   const modo = () => MODOS.find(m => m[0] === (R() ? R().modo(T()) : v.modo)) || MODOS[1];
-  const chipModo = () => `<button class="v4-chip ${modo()[0] === 'planejar' ? 'plano' : modo()[0] === 'auto' ? 'auto' : ''}" data-act="v4:pop:modo" title="Modo de permissão (Ctrl+Shift+M)">${ico(modo()[2])}<span>${modo()[1]}</span></button>`;
+  const chipModo = () => `<button class="v4-chip ${modo()[0] === 'auto' ? 'auto' : ''}" data-act="v4:pop:modo" title="Modo de permissão (Ctrl+Shift+M)">${ico(modo()[2])}<span>${modo()[1]}</span></button>`;
   const chipCtx = () => `<button class="v4-ctx" data-act="v4:pop:ctx" title="Contexto usado: ${ctx().usado} mil de ${ctx().total} mil tokens">${anel(pct())}<span>${pct()}%</span></button>`;
   const popModo = () => `<div class="v4-pop modo"><div class="v4-pt">Modo de permissão<kbd>Ctrl+Shift+M</kbd></div>${MODOS.map(m => `<button class="v4-op ${m[0] === modo()[0] ? 'on' : ''}" data-act="v4:modo:${m[0]}">${ico(m[2])}<span><b>${m[1]}</b><small>${m[3]}</small></span>${m[0] === modo()[0] ? `<i class="v4-ok">${ico('ok')}</i>` : ''}</button>`).join('')}</div>`;
   const popCtx = () => `<div class="v4-pop ctx"><div class="v4-pt">Contexto da conversa</div><div class="v4-ctx-g">${anel(pct(), 56)}<div><b>${pct()}%</b><small>${ctx().usado} mil de ${ctx().total} mil tokens</small></div></div>
@@ -53,7 +53,9 @@
   const lado = () => `<div class="v4-lado"><div class="v4-lado-c">${ico('lado')}<b>Pergunta de lado</b><span>lê a conversa, não entra nela</span><button class="v4-x" data-act="v4:lado" title="Fechar (Esc)">${ico('x')}</button></div>
     ${v.ladoQ ? `<div class="v4-lado-q">${esc(v.ladoQ)}</div>${v.ladoResp ? `<div class="v4-lado-r">${v.ladoR}</div>` : '<div class="v4-lado-r esp"><i></i><i></i><i></i></div>'}` : ''}
     <div class="v4-lado-in"><input placeholder="Outra pergunta de lado…" spellcheck="false"><kbd>Enter</kbd></div></div>`;
-  const vista = () => `<div class="v4-vista" title="Como mostrar os passos (Ctrl+O)">${[['resumido', 'Resumido'], ['detalhado', 'Detalhado']].map(x => `<button class="${v.vista === x[0] ? 'on' : ''}" data-act="v4:vista:${x[0]}">${x[1]}</button>`).join('')}</div>`;
+  // 11/11: the switch follows the open tab (arrow on "Pensando" line also shows/hides steps)
+  const vistaAgora = () => { const t = M.aba && M.aba(); return t ? (t.verPassos ? 'detalhado' : 'resumido') : v.vista; };
+  const vista = () => `<div class="v4-vista" title="Como mostrar os passos (Ctrl+O)">${[['resumido', 'Resumido'], ['detalhado', 'Detalhado']].map(x => `<button class="${vistaAgora() === x[0] ? 'on' : ''}" data-act="v4:vista:${x[0]}">${x[1]}</button>`).join('')}</div>`;
 
   // diff: unified, line comment "+" on hover, comments shown under the line, batch send
   function diff(i, compacto) {
@@ -72,7 +74,7 @@
   const cartaoCtx = () => `<div class="v4-card ctxc" data-act="v4:pop:ctx"><div class="v4-ct">${anel(pct(), 16)}Contexto<span>${pct()}%</span></div><div class="v4-barra">${ctx().partes.map(p => `<i style="width:${p[1] / ctx().total * 100}%;background:${p[2]}"></i>`).join('')}</div><small>${ctx().usado} mil de ${ctx().total} mil tokens</small></div>`;
   const isolada = () => `<button class="v4-iso ${v.isolada ? 'on' : ''}" data-act="v4:isolada" title="Cópia isolada (git worktree): a conversa mexe numa cópia da pasta; você junta quando aprovar">${ico('copia')}<span><b>Cópia isolada</b><small>${v.isolada ? 'mexe numa cópia · juntar quando aprovar' : 'mexe direto na pasta do projeto'}</small></span><i class="v4-sw"></i></button>`;
   const agendadas = () => `<div class="v4-ag">${AGEND.map(a => `<div class="v4-ag-i">${ico('rel')}<span><b>${a[0]}</b><small>${a[1]}</small><small class="h ${/pulou/.test(a[2]) ? 'av' : ''}">${a[2]}</small></span><button class="v4-b" data-act="v4:agora" title="Rodar agora">Rodar agora</button></div>`).join('')}<button class="v4-b novo" data-act="v4:agnova">${ico('mais')}Nova tarefa agendada</button></div>`;
-  const terminal = () => R() ? R().terminal(T()) : `<div class="v4-term"><div>PS D:\\Projetos\\FCC&gt; node abas\\ferramentas\\testar-local-programar.js</div><div class="ok">ok    1 só no chat: mandou salvar</div><div class="ok">ok    2 teste falhou: não deixou entregar</div><div class="ok">ok    5 nunca testou: aviso do programa</div><div>Tudo certo</div><div class="cur">PS D:\\Projetos\\FCC&gt; <i></i></div></div>`;
+  const terminal = () => R() ? R().terminal(T()) : `<div class="v4-term"><div>PS C:\\Projetos\\FCC&gt; node abas\\ferramentas\\testar-passagem.js</div><div class="ok">ok    1 só no chat: mandou salvar</div><div class="ok">ok    2 teste falhou: não deixou entregar</div><div class="ok">ok    5 nunca testou: aviso do programa</div><div>Tudo certo</div><div class="cur">PS C:\\Projetos\\FCC&gt; <i></i></div></div>`;
   const FS = { dirs: ['abas', 'casa', 'docs', 'familias', 'memoria'], files: ['CLAUDE.md', 'fcc-abas.json', 'package.json'] };
   const arquivos = () => { const fs = R() ? R().arquivos(T()) : FS; return `<div class="v4-fs">${fs.dirs.map(d => `<div class="d"${R() ? ` data-act="v4:abre:${esc(d)}"` : ''}>${ico('proj')}${esc(d)}</div>`).join('')}${fs.files.map(f => `<div class="f"${R() ? ` data-act="v4:abre:${esc(f)}"` : ''}>${ico('arq')}${esc(f)}</div>`).join('')}</div>`; };
 
@@ -100,7 +102,8 @@
   const popsDe = (t, outro) => (v.pop === 'modo' && !outro ? popModo() : '') + (v.pop === 'ctx' && !outro ? popCtx() : '') + (v.lado && !outro ? lado() : '');
   const barraDe = (t, outro) => {
     const q = t.p, tit = esc((t.titulo && !(q && t.titulo === q.n) && t.titulo) || (q ? 'Conversa em ' + M.nomeProj(q) : 'Chat livre'));
-    const barra = `<div class="v4-topo"><span class="v4-tt">${q ? `<i style="background:${M.corDe(q.n)}"></i>` : ''}<span class="v4-tx">${tit}</span></span>${V !== 'C' && v.isolada && q ? `<span class="v4-tag" title="Esta conversa mexe numa cópia isolada da pasta">${ico('copia')}cópia isolada</span>` : ''}<span class="esp"></span>${vista()}<button class="ib v4-ib" data-act="v4:lado" title="Pergunta de lado (Ctrl+;)">${ico('lado')}</button>${V === 'B' ? `<button class="ib v4-ib ${v.split ? 'on' : ''}" data-act="v4:split" title="Duas conversas lado a lado">${ico('split')}</button>` : ''}${outro ? `<button class="ib v4-ib" data-act="v4:fechasplit" title="Fechar este lado">${ico('x')}</button>` : ''}</div>`;
+    // 19/11 balloon mode (user request): window the size of a Galaxy S22 (360 x 780) with only this conversation; the top bar becomes its handle
+    const barra = `<div class="v4-topo"><span class="v4-tt">${q ? `<i style="background:${M.corDe(q.n)}"></i>` : ''}<span class="v4-tx">${tit}</span></span>${V !== 'C' && v.isolada && q ? `<span class="v4-tag" title="Esta conversa mexe numa cópia isolada da pasta">${ico('copia')}cópia isolada</span>` : ''}<span class="esp"></span>${vista()}<button class="ib v4-ib" data-act="v4:lado" title="Pergunta de lado (Ctrl+;)">${ico('lado')}</button>${outro ? '' : `<button class="ib v4-ib" data-act="balao" title="Balão: esta conversa vai para uma janelinha separada, do tamanho de um celular, por cima das outras janelas (Ctrl+Shift+B)">${ico('balao')}</button>`}${V === 'B' ? `<button class="ib v4-ib ${v.split ? 'on' : ''}" data-act="v4:split" title="Duas conversas lado a lado">${ico('split')}</button>` : ''}${outro ? `<button class="ib v4-ib" data-act="v4:fechasplit" title="Fechar este lado">${ico('x')}</button>` : ''}</div>`;
     return barra;
   };
   M.v4 = { barra: barraDe, pops: popsDe, reset: () => { for (const k of Object.keys(v)) delete v[k]; Object.assign(v, JSON.parse(JSON.stringify(V40))); if (R()) R().inicio(v); } };
@@ -163,10 +166,11 @@
   };
   document.addEventListener('keydown', (e) => {
     const k = e.key.toLowerCase();
-    if (e.ctrlKey && e.shiftKey && k === 'm') { e.preventDefault(); const i = MODOS.findIndex(m => m[0] === modo()[0]); M.agir('v4:modo:' + MODOS[(i + 1) % MODOS.length][0]); }
+    if (e.ctrlKey && e.shiftKey && k === 'b') { e.preventDefault(); M.agir('balao'); }
+    else if (e.ctrlKey && e.shiftKey && k === 'm') { e.preventDefault(); const i = MODOS.findIndex(m => m[0] === modo()[0]); M.agir('v4:modo:' + MODOS[(i + 1) % MODOS.length][0]); }
     else if (e.key === 'Enter' && e.target.closest && e.target.closest('.v4-lado-in')) { e.preventDefault(); e.stopImmediatePropagation(); M.agir('v4:pergunta'); }
     else if (e.ctrlKey && e.shiftKey && k === 'd') { e.preventDefault(); M.agir(V === 'B' ? 'v4:dock:mudancas' : V === 'C' ? 'v4:voo:mudancas' : 'v4:folha:0'); }
-    else if (e.ctrlKey && !e.shiftKey && k === 'o') { e.preventDefault(); M.agir('v4:vista:' + (v.vista === 'resumido' ? 'detalhado' : 'resumido')); }
+    else if (e.ctrlKey && !e.shiftKey && k === 'o') { e.preventDefault(); M.agir('v4:vista:' + (vistaAgora() === 'resumido' ? 'detalhado' : 'resumido')); }
     else if (e.ctrlKey && (e.key === ';' || e.code === 'Slash' || e.code === 'Semicolon')) { e.preventDefault(); M.agir('v4:lado'); }
     else if (e.ctrlKey && e.key === 'Enter' && v.com.length && document.querySelector('.v4-env')) { e.preventDefault(); M.agir('v4:mandacom'); }
     else if (e.key === 'Escape' && (v.pop || v.lado || v.voo || v.comAberto)) { e.stopImmediatePropagation(); v.pop = ''; v.lado = false; v.voo = ''; v.comAberto = null; M.draw(); }

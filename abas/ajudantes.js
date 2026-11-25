@@ -1,5 +1,5 @@
 // Helpers (01/11/2026, user request): orq.py workers write what they do now to casa\orquestra\vivo\*.json; here that reaches the conversation,
-// and helpers die with the program. Quit walks the tree under each Claude Code process, but only console tools: a program Claude opened (FAH, game) stays open.
+// and helpers die with the program. Quit walks the tree under each Claude Code process, but only console tools: a program Claude opened (a game, for example) stays open.
 const fs = require('fs'), path = require('path'), cp = require('child_process');
 const FERRAMENTAS = ['claude.exe', 'node.exe', 'python.exe', 'python3.exe', 'pythonw.exe', 'py.exe', 'bash.exe', 'sh.exe', 'cmd.exe', 'powershell.exe', 'pwsh.exe', 'conhost.exe', 'git.exe', 'rg.exe', 'grep.exe', 'msbuild.exe', 'dotnet.exe', 'timeout.exe', 'sleep.exe', 'ping.exe'];
 

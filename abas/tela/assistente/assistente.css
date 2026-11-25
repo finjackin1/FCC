@@ -1,0 +1,69 @@
+/* Assistente V1 (11/11/2026): look of prototype B "Janelinha" (docs\prototipos\assistente\B.html + comum.css), palette = FCC "vivo". */
+:root, :root[data-tema="escuro"] { --bg: #14161d; --bg2: #1a1d27; --bg3: #252a38; --linha: #2b3040; --fg: #f1f3f9; --fg2: #c2c8da; --fg3: #8a92aa; --hover: #222736;
+  --acento: #ff7849; --local: #5b9dff; --pop: #1d212d; --ok: #34d399; --amb: #fbbf24; --vm: #f87171;
+  --brilho: 0 4px 18px color-mix(in srgb, var(--acento) 40%, transparent); }
+:root[data-tema="claro"] { --bg: #ffffff; --bg2: #f5f6fc; --bg3: #eaedf7; --linha: #e0e4f0; --fg: #131722; --fg2: #474f66; --fg3: #7a8299; --hover: #edf0f9;
+  --acento: #f2622e; --local: #2563eb; --pop: #ffffff; --ok: #059669; --amb: #d97706; --vm: #dc2626;
+  --brilho: 0 4px 14px color-mix(in srgb, var(--acento) 35%, transparent); }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+body { font: 14px/1.45 "Segoe UI Variable Text", "Segoe UI", sans-serif; color: var(--fg); }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid color-mix(in srgb, var(--fg) 45%, transparent); outline-offset: 2px; }
+
+#assist { position: absolute; inset: 0; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: var(--bg); border: 1px solid var(--linha);
+  transform-origin: bottom right; }
+#assist.nasce { animation: nasce .3s cubic-bezier(.2,.9,.3,1.1); }
+@keyframes nasce { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+#assist.saindo { animation: sai .3s ease-in forwards; } @keyframes sai { to { opacity: 0; transform: translateY(20px) scale(.96); } }
+.cab { height: 44px; padding: 0 6px 0 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--linha); -webkit-app-region: drag; flex: none; }
+.cab button, .cab .modo { -webkit-app-region: no-drag; }
+.cab b { font-weight: 600; flex: 1; } .cab .ast { color: var(--acento); text-shadow: 0 0 12px color-mix(in srgb, var(--acento) 60%, transparent); display: inline-block; -webkit-app-region: no-drag; }
+#assist[data-estado="pensando"] .cab .ast { animation: gira 1.6s linear infinite; } @keyframes gira { to { transform: rotate(360deg); } }
+[data-lista] { flex: 1; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
+.msg { max-width: 85%; padding: 8px 12px; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; animation: sobe .3s ease-out; user-select: text; }
+.msg.voce { align-self: flex-end; background: var(--bg3); border-bottom-right-radius: 4px; }
+.msg.ia { align-self: flex-start; background: var(--bg2); border: 1px solid var(--linha); border-bottom-left-radius: 4px; }
+.msg.ia.digitando::after { content: "▍"; color: var(--acento); animation: pisca 1s steps(1) infinite; }
+.linha { align-self: flex-start; font-size: 12px; color: var(--fg3); padding: 0 4px; animation: sobe .3s ease-out; }
+.linha.erro { color: var(--vm); } .linha.troca { color: color-mix(in srgb, var(--acento) 80%, var(--fg2)); }
+.perm { align-self: stretch; padding: 10px 12px; border-radius: 12px; background: var(--bg2); border: 1px solid color-mix(in srgb, var(--amb) 50%, var(--linha)); animation: sobe .3s ease-out; }
+.perm b { font-weight: 600; display: block; margin-bottom: 4px; } .perm code { display: block; font: 12px Consolas, monospace; color: var(--fg2); max-height: 72px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.perm .bts { display: flex; gap: 6px; margin-top: 8px; }
+.perm .bts button { padding: 5px 12px; border-radius: 99px; background: var(--bg3); transition: background-color .15s, transform .12s; } .perm .bts button:hover { background: var(--hover); } .perm .bts button:active { transform: scale(.97); }
+.perm .bts button.sim { background: var(--acento); color: #fff; box-shadow: var(--brilho); }
+.perm.feito { opacity: .6; border-color: var(--linha); } .perm.feito .bts { display: none; }
+.vazio { margin: auto; text-align: center; color: var(--fg3); animation: sobe .3s ease-out; }
+.vazio .sug { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.vazio .sug button { padding: 8px 12px; border-radius: 10px; background: var(--bg2); border: 1px solid var(--linha); color: var(--fg2); transition: background-color .15s, transform .15s; }
+.vazio .sug button:hover { background: var(--hover); transform: translateY(-1px); }
+[data-lista]:has(.msg) .vazio { display: none; }
+.pe { border-top: 1px solid var(--linha); padding: 10px 12px; min-height: 64px; display: flex; align-items: center; gap: 10px; background: var(--bg2); flex: none; }
+.voz-pe { flex: 1; display: none; align-items: center; gap: 12px; min-width: 0; animation: sobe .25s ease-out; }
+#assist[data-estado="falando"] .voz-pe { display: flex; } #assist[data-estado="falando"] form { display: none; }
+.voz-pe .ondas { flex: 1; justify-content: center; }
+form { flex: 1; display: flex; gap: 6px; }
+
+.orbe { width: 40px; height: 40px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #fff; position: relative;
+  background: linear-gradient(135deg, var(--acento), color-mix(in srgb, var(--acento) 70%, #e0306a)); box-shadow: var(--brilho); transition: transform .2s; }
+.orbe:active { transform: scale(.94); } .orbe svg { width: 18px; height: 18px; }
+.ondas { display: flex; align-items: center; gap: 3px; height: 24px; }
+.ondas i { width: 3px; height: 4px; border-radius: 2px; background: var(--local); transition: height .1s; }
+.pontos i { display: inline-block; width: 6px; height: 6px; margin: 0 2px; border-radius: 50%; background: var(--fg3); animation: pulo 1s ease-in-out infinite; }
+.pontos i:nth-child(2) { animation-delay: .15s; } .pontos i:nth-child(3) { animation-delay: .3s; }
+.modo { display: flex; padding: 2px; border-radius: 99px; background: var(--bg3); }
+.modo button { padding: 3px 10px; border-radius: 99px; color: var(--fg3); font-size: 12px; transition: background-color .2s, color .2s; }
+.modo button.sel { background: var(--pop); color: var(--fg); box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.ib { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--fg2); transition: background-color .15s, transform .12s; flex: none; }
+.ib:hover { background: var(--hover); } .ib:active { transform: scale(.94); } .ib svg { width: 16px; height: 16px; } .ib.fechar:hover { color: var(--vm); }
+.ib:disabled { opacity: .4; cursor: default; } .ib:disabled:hover { background: none; }
+.campo { flex: 1; min-width: 0; border: 1px solid var(--linha); background: var(--bg2); color: var(--fg); border-radius: 99px; padding: 8px 14px; font: inherit; outline: none; transition: border-color .15s; }
+.campo:focus { border-color: color-mix(in srgb, var(--fg) 30%, transparent); } .campo:focus-visible { outline: none; }
+#assist[data-estado="pensando"] [data-enviar] { color: var(--acento); }
+.dica { position: absolute; padding: 4px 8px; border-radius: 6px; background: var(--pop); border: 1px solid var(--linha); font-size: 12px; color: var(--fg2);
+  pointer-events: none; z-index: 99; animation: surge .15s ease-out; max-width: 300px; }
+@keyframes pisca { 50% { opacity: 0; } }
+@keyframes pulo { 50% { transform: translateY(-4px); opacity: .5; } }
+@keyframes surge { from { opacity: 0; transform: translateY(6px) scale(.97); } }
+@keyframes sobe { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

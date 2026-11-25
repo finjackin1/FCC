@@ -35,7 +35,7 @@
 .m-sep { height: 1px; background: var(--linha); margin: 4px 0; } .m-tit { font-size: 11px; color: var(--fg3); padding: 4px 10px; }
 .pe { border-top: 1px solid var(--linha); padding: 8px; display: flex; flex-direction: column; gap: 2px; }
 .bia { height: 40px; border-radius: 10px; display: flex; align-items: center; gap: 8px; padding: 0 10px; color: var(--fg2); font-size: 13px; white-space: nowrap; border: 1px solid var(--linha); background: var(--bg); }
-.bia:hover { border-color: var(--fg3); } .bia b { font-weight: 600; color: var(--fg); } .bia .e { color: var(--fg3); } .bia .mini { margin-left: auto; } .bia .ico:first-child { color: var(--acento); } .bia.loc .ico:first-child, .bia.loc b { color: var(--local); }
+.bia:hover { border-color: var(--fg3); } .bia b { font-weight: 600; color: var(--fg); } .bia .e { color: var(--fg3); } .bia .mini { margin-left: auto; } .bia .ico:first-child { color: var(--acento); }
 .pe .bia { margin-bottom: 4px; }
 .pe .lin2 { display: flex; align-items: center; gap: 8px; padding: 0 8px; height: 32px; font-size: 12px; color: var(--fg2); border-radius: 8px; cursor: pointer; white-space: nowrap; } .pe .lin2:hover { background: var(--hover); }
 .pe .lin2 .av { width: 22px; height: 22px; border-radius: 11px; background: var(--acento); color: #fff; font-weight: 600; display: grid; place-items: center; font-size: 11px; } .pe .lin2 .ib { margin-left: auto; } .ic2 { width: 22px; display: grid; place-items: center; color: var(--fg3); }
@@ -80,19 +80,7 @@
 
 .tst-lista.abrindo { animation: abre .22s ease-out; overflow: hidden; } .tst-it span { transition: color .2s; } .tst-it input { transition: transform .12s; } .tst-it input:active { transform: scale(.85); }
 .tst-cab .chev .ico { transition: transform .15s; }
-/* menu curto da IA (25/10): Claude e IA Local + engrenagem; abre do lado do botão (interface-web §2: surge-m) */
-.iam { position: fixed; z-index: 150; width: 300px; padding: 6px; border-radius: 14px; background: var(--pop); border: 1px solid var(--linha); box-shadow: var(--sombra); animation: surge-m .16s cubic-bezier(.2,.9,.3,1.2); }
-.iam-it { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 6px 0 8px; border-radius: 10px; cursor: pointer; outline: none; transition: background-color .12s; }
-.iam-it:hover, .iam-it:focus-visible { background: var(--hover); } .iam-it:focus-visible { box-shadow: inset 0 0 0 2px var(--acento); }
-.iam-ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--acento) 16%, transparent); color: var(--acento); flex: none; }
-.iam-it.loc .iam-ic { background: color-mix(in srgb, var(--local) 16%, transparent); color: var(--local); }
-.iam-tx { flex: 1; min-width: 0; } .iam-tx b { display: block; font-size: 13px; } .iam-tx small { display: block; font-size: 11px; color: var(--fg3); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.iam-it.on .iam-tx b { color: var(--fg); } .iam-v { color: var(--ok); width: 14px; height: 14px; flex: none; }
-.iam-cfg { flex: none; color: var(--fg3); transition: transform .3s, color .12s; } .iam-cfg:hover { color: var(--fg); transform: rotate(60deg); }
-.iam-cad { color: var(--fg3); display: grid; place-items: center; } .iam-cad .ico { width: 14px; height: 14px; }
-.iam-sep { height: 1px; margin: 4px 8px; background: var(--linha); } .iam-loja { height: 46px; }
 .f-mem span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .f-mem small { white-space: nowrap; flex: none; }   /* 26/10: tela pequena não quebra a linha */
 /* ícone do .exe do projeto (27/10): no lugar da letra, sem o fundo colorido */
 img.pico { width: 100%; height: 100%; object-fit: contain; display: block; cursor: pointer; }
 .pj .ic:has(.pico), .cv-ic:has(.pico) { background: transparent !important; padding: 2px; } .f-cab .big:has(.pico) { background: transparent !important; box-shadow: none !important; padding: 4px; }
-.ib.f-volta svg { transform: scaleX(-1); }   /* 28/10: back to choice screen, next to statistics */

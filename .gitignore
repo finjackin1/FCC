@@ -10,3 +10,15 @@ docs/historico/
 node_modules/
 *.log
 .playwright-cli/
+
+# pessoal / diário de trabalho: fica só no PC do dono
+/CLAUDE.md
+/AGENTS.md
+/docs/PARADA.md
+/docs/CONTEXTO.md
+/docs/PRA-TESTAR.md
+/docs/contexto/
+
+# protótipos descartados / experimentais
+/docs/prototipos/interface-nova/
+/docs/prototipos/claude-assistente/

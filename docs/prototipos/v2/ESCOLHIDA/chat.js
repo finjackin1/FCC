@@ -11,10 +11,8 @@ window.CHAT = (() => {
     ['xhigh', 'Muito alto', 'para problema difícil · mais lento'], ['max', 'Máximo', 'pensa o quanto precisar · gasta mais do limite']];
   const ROT = { testar: 'você testa', decidir: 'você decide', livre: 'livre', parado: 'parado' };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const ehLocal = (m) => !MODELOS.some(x => x.id === m);
   const nomeMod = (m) => (MODELOS.find(x => x.id === m) || { n: m }).n;
   const fmtN = (n) => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.', ',') + ' mi' : n >= 1e4 ? Math.round(n / 1e3) + ' mil' : n >= 1e3 ? (n / 1e3).toFixed(1).replace('.', ',') + ' mil' : String(Math.round(n));
-  const modoN = (a) => ['Rápido', 'Normal', 'Pensar'][+a.pensar || 0];
   const nomeEsf = (v) => (ESF.find(e => e[0] === v) || ESF[1])[1];
 
   const I = {
@@ -94,7 +92,7 @@ window.CHAT = (() => {
       } else if (e.type === 'content_block_delta' && t.vivo) {
         const it = t.vivo.blocos[e.index]; if (!it) return;
         if (e.delta.type === 'text_delta') { it.md += e.delta.text || ''; it.html = null; }
-        else if (e.delta.type === 'thinking_delta') it.txt += e.delta.thinking || '';
+        else if (e.delta.type === 'thinking_delta') { it.txt += e.delta.thinking || ''; it.html = null; }
       } else if (e.type === 'content_block_stop' && t.vivo) {
         const it = t.vivo.blocos[e.index]; if (it && it.k === 'pensou') it.seg = Math.max(1, Math.round((Date.now() - it.t0) / 1000));
         if (it && it.k === 'ia' && !it.md.trim()) I.splice(I.indexOf(it), 1);
@@ -106,21 +104,23 @@ window.CHAT = (() => {
       for (const b of m.content) {
         if (b.type === 'tool_use') {
           if (b.name === 'AskUserQuestion' || b.name === 'ExitPlanMode') continue;   // become card (permission)
-          I.push({ k: 'ferr', id: b.id, nome: b.name, ...ferramenta(b.name, b.input, t.dir), res: '', outra: /orq\.py/.test((b.input && b.input.command) || '') });   // outra = worker on the other account
+          I.push({ k: 'ferr', id: b.id, nome: b.name, ...ferramenta(b.name, b.input, t.dir), inp: b.input, res: '', outra: /orq\.py/.test((b.input && b.input.command) || '') });   // outra = worker on the other account
         } else if (!jaVeio && b.type === 'text' && b.text.trim() && !/^\W*(PENDENTE|PRONTO)\W*$/.test(b.text)) I.push({ k: 'ia', md: b.text });
         else if (!jaVeio && b.type === 'thinking' && aoVivo === false && b.thinking) I.push({ k: 'pensou', txt: b.thinking, seg: 0 });
       }
       return;
     }
     if (m.type === 'user') {
-      for (const r of m.resultados || []) { const it = I.find(x => x.k === 'ferr' && x.id === r.id); if (it) it.res = resumoResultado(it.nome, r); }
+      for (const r of m.resultados || []) { const it = I.find(x => x.k === 'ferr' && x.id === r.id); if (it) { it.res = resumoResultado(it.nome, r); it.out = r.txt; it.erro = !!r.erro; } }
       const tx = (m.texto || '').trim();
       if (!tx || (m.resultados && m.resultados.length)) return;
       const loc = tx.match(/^<local-command-stdout>([\s\S]*?)<\/local-command-stdout>$/);
       if (loc) { const s = loc[1].trim(); if (s && !/^Set (model|effort)/i.test(s)) I.push({ k: 'troca', txt: s.replace(/`/g, '').slice(0, 200) }); return; }
       if (m.meta || tx.startsWith('<') || /^Caveat:/.test(tx) || /^\[FCC\]/.test(tx)) return;
-      const fala = tx.replace(/^\[New conversation:[^\]]*\]\s*/, '');   // handoff texts are for Claude, not history
+      const fala = tx.replace(/^\[New conversation:[^\]]*\](?:\s*Last exchanges of the previous conversation[\s\S]*?\[\/end of previous exchanges\])?\s*/, '');   // handoff texts are for Claude, not history
       if (!fala || /^Continue the task now\b/.test(fala)) return;
+      const jt = fala.match(/\n\n\[FCC-junto\] [^«]*(?:«([\s\S]*)»)?[\s\S]*$/);   // 13/11: sent while it worked + the quick parallel answer
+      if (jt) { if (!aoVivo) I.push({ k: 'eu', txt: fala.slice(0, jt.index), antes }, ...(jt[1] ? [{ k: 'lado', txt: jt[1] }] : [])); return; }
       if (!aoVivo) I.push({ k: 'eu', txt: fala, antes });            // in history; live, bubble already entered when user sent
       return;
     }
@@ -142,15 +142,16 @@ window.CHAT = (() => {
   const giroG = ['·', '✢', '✳', '✶', '✻', '✽'];
   const giro = (parado) => parado ? '✻' : giroG[Math.floor(Date.now() / 160) % giroG.length];
   function permTitulo(p) {
-    if (p.tool === 'Bash' || p.tool === 'PowerShell') return ['O Claude quer rodar um comando', p.input.description || p.input.command, p.tool];
-    if (/^(Edit|Write|MultiEdit|NotebookEdit)$/.test(p.tool)) return ['O Claude quer mudar um arquivo', relativo(p.input.file_path || p.input.notebook_path, p.dir), p.tool === 'Write' ? 'criar' : 'editar'];
-    if (p.tool === 'WebFetch') return ['O Claude quer abrir uma página', p.input.url, 'internet'];
-    if (p.tool === 'WebSearch') return ['O Claude quer pesquisar na internet', p.input.query, 'pesquisa'];
-    const f = ferramenta(p.tool, p.input, p.dir); return [`O Claude quer usar ${p.tool.replace(/^mcp__(.+?)__/, '')}`, f.alvo, p.tool.startsWith('mcp__') ? 'conector' : 'ferramenta'];
+    const quem = 'O Claude';
+    if (p.tool === 'Bash' || p.tool === 'PowerShell') return [`${quem} quer rodar um comando`, p.input.description || p.input.command, p.tool];
+    if (/^(Edit|Write|MultiEdit|NotebookEdit)$/.test(p.tool)) return [`${quem} quer mudar um arquivo`, relativo(p.input.file_path || p.input.notebook_path, p.dir), p.tool === 'Write' ? 'criar' : 'editar'];
+    if (p.tool === 'WebFetch') return [`${quem} quer abrir uma página`, p.input.url, 'internet'];
+    if (p.tool === 'WebSearch') return [`${quem} quer pesquisar na internet`, p.input.query, 'pesquisa'];
+    const f = ferramenta(p.tool, p.input, p.dir); return [`${quem} quer usar ${p.tool.replace(/^mcp__(.+?)__/, '')}`, f.alvo, p.tool.startsWith('mcp__') ? 'conector' : 'ferramenta'];
   }
   function permHTML(p, i) {
     if (p.resp) {
-      const r = { ok: ['ok', 'Permitido'], sempre: ['ok', 'Permitido sempre nesta pasta'], negado: ['x', 'Negado'], respondido: ['ok', 'Respondido'], aprovado: ['ok', 'Plano aprovado'], cancelado: ['x', 'Cancelado'] }[p.resp];
+      const r = { ok: ['ok', 'Permitido'], cadeia: ['ok', 'Permitido em cadeia nesta tarefa'], sempre: ['ok', 'Permitido sempre nesta pasta'], negado: ['x', 'Negado'], respondido: ['ok', 'Respondido'], aprovado: ['ok', 'Plano aprovado'], cancelado: ['x', 'Cancelado'] }[p.resp] || ['ok', 'Permitido'];
       return `<div class="c-feito">${ico(r[0])}${r[1]}: ${esc(p.resumo || '')}</div>`;
     }
     if (p.tool === 'AskUserQuestion') {
@@ -168,7 +169,7 @@ window.CHAT = (() => {
     if (p.tool === 'ExitPlanMode') return `<div class="c-perm"><div class="tt">${ico('escudo')}O Claude preparou um plano</div><div class="oq plano c-ia">${md(p.input.plan || '')}</div><div class="bs"><button class="c-btn prim" data-act="perm:aprovado">Aprovar <kbd>1</kbd></button><button class="c-btn" data-act="perm:negado">Pedir mudanças <kbd>Esc</kbd></button></div></div>`;
     const [tt, oq, tipo] = permTitulo(p);
     return `<div class="c-perm"><div class="tt">${ico('escudo')}${esc(tt)}</div><div class="oq">${esc(oq)}<span>${esc(tipo)}</span></div>
-            <div class="bs"><button class="c-btn prim" data-act="perm:ok">Permitir <kbd>1</kbd></button><button class="c-btn" data-act="perm:sempre">Sempre nesta pasta <kbd>2</kbd></button><button class="c-btn" data-act="perm:negado">Negar <kbd>Esc</kbd></button></div></div>`;
+            <div class="bs"><button class="c-btn prim" data-act="perm:cadeia" title="Permite esta ação e todas as próximas desta tarefa sem perguntar cada microcoisa">Permitir em cadeia <kbd>1</kbd></button><button class="c-btn" data-act="perm:ok" title="Permite só esta ação">Só esta <kbd>2</kbd></button><button class="c-btn" data-act="perm:sempre" title="Permite toda a cadeia nesta pasta">Sempre nesta pasta <kbd>3</kbd></button><button class="c-btn" data-act="perm:negado">Negar <kbd>Esc</kbd></button></div></div>`;
   }
   // "Pensando…" line kept apart (spins 6x/s without redrawing conversation, which would lose text selection)
   // what it's doing now (last tool without result yet; writing; else thinking)
@@ -203,7 +204,7 @@ window.CHAT = (() => {
   // 1st line: icon · what it's doing · arrow (shows all steps); 2nd: time · Esc. Icon has fixed width: text doesn't shift.
   // vivo = only what changes by itself (spinning icon and time): UI swaps these texts without redoing arrow button (redo 6x/s lost click)
   const tokResp = (t) => { let n = 0; for (const v of Object.values(t.rTok || {})) n += v.ent + v.sai; return n; };
-  const rodapeVivo = (t, parado) => emFundo(t) ? (f => ({ g: giro(parado), s: `${tempo(Math.max(1, Math.round((Date.now() - f.t0) / 1000)))}${f.prog ? ' · ' + f.prog : f.n ? ` · ${f.n} ações` : ''}${semNovidade(f.tUlt)} · o Claude continua quando terminar` }))(fundoInfo(t)) : ({ g: giro(parado), s: `${tempo(t.seg != null ? t.seg : Math.max(1, Math.round((Date.now() - t.t0) / 1000)))} pensando${tokResp(t) ? ` · ${fmtN(tokResp(t))} tokens` : ''}${ehLocal(t.modelo) && t.tpsVivo ? ` · ${t.tpsVivo} tokens/s` : ''} · Esc interrompe` });
+  const rodapeVivo = (t, parado) => emFundo(t) ? (f => ({ g: giro(parado), s: `${tempo(Math.max(1, Math.round((Date.now() - f.t0) / 1000)))}${f.prog ? ' · ' + f.prog : f.n ? ` · ${f.n} ações` : ''}${semNovidade(f.tUlt)} · o Claude continua quando terminar` }))(fundoInfo(t)) : ({ g: giro(parado), s: `${tempo(t.seg != null ? t.seg : Math.max(1, Math.round((Date.now() - t.t0) / 1000)))} pensando${tokResp(t) ? ` · ${fmtN(tokResp(t))} tokens` : ''} · Esc interrompe` });
   // queued messages (sent while it answers): below the reply, go when it ends; ✕ puts it back in the box
   const filaHTML = (t) => (t.fila || []).map((x, i) => `<div class="c-eu c-nafila">${esc(x)}<span class="c-fila-t">Na fila: vai quando ele terminar</span><button class="c-ed" data-act="desfila:${i}" title="Tirar da fila (volta para a caixa)">${ico('x')}</button></div>`).join('');
   function rodapeHTML(t, parado) { const f = filaHTML(t); return rodapeSo(t, parado) + (f ? `<div class="c-filas">${f}</div>` : ''); }
@@ -217,76 +218,99 @@ window.CHAT = (() => {
   }
   // conversation goes in blocks (one per message or step group): UI swaps only changed block
   // (redoing whole conversation per reply chunk cost ~0.3 s on long conversation and froze everything)
+  // ---- detailed steps (11/11/2026, user request: like Claude Code Desktop "Verbose"): each tool on its own line,
+  // thinking text open, command + output, edits as red/green diff, task list. Open by default; click closes.
+  const MAXL = 60;
+  const linhasDe = (s) => String(s == null ? '' : s).replace(/\r/g, '').replace(/\n+$/, '').split('\n');
+  function preHTML(txt, cls = '') {
+    const L = linhasDe(txt), so = L.slice(0, MAXL);
+    return `<pre class="c-pre ${cls}">${esc(so.join('\n'))}${L.length > MAXL ? `\n<span class="c-pre-mais">… mais ${L.length - MAXL} linhas</span>` : ''}</pre>`;
+  }
+  function diffHTML(velho, novo) {
+    const a = velho != null && velho !== '' ? linhasDe(velho) : [], b = novo != null && novo !== '' ? linhasDe(novo) : [];
+    let ini = 0; while (ini < a.length && ini < b.length && a[ini] === b[ini]) ini++;             // same lines at start/end = context, not change
+    let fim = 0; while (fim < a.length - ini && fim < b.length - ini && a[a.length - 1 - fim] === b[b.length - 1 - fim]) fim++;
+    const R = [...a.slice(0, ini).map(x => ['', x]), ...a.slice(ini, a.length - fim).map(x => ['c-d-menos', x]), ...b.slice(ini, b.length - fim).map(x => ['c-d-mais', x]), ...a.slice(a.length - fim).map(x => ['', x])];
+    const so = R.slice(0, MAXL);
+    return `<pre class="c-pre c-diff">${so.map(([c, x]) => `<span class="${c}">${c === 'c-d-menos' ? '-' : c === 'c-d-mais' ? '+' : ' '} ${esc(x)}</span>`).join('')}${R.length > MAXL ? `<span class="c-pre-mais">… mais ${R.length - MAXL} linhas</span>` : ''}</pre>`;
+  }
+  const anima = (t, i) => t.anima && t.anima.i === i && Date.now() < t.anima.ate ? ' anima' : '';   // open animation only on click (not on every redraw while streaming)
+  const rot = (s) => `<div class="c-rot">${esc(s)}</div>`;
+  const nLinhas = (s) => { const n = linhasDe(s).filter(x => x.trim()).length; return `+${n}`; };
+  // body of a tool line (null = nothing more to show than the line itself)
+  function corpoFerr(l, dir) {
+    const p = l.inp || {}, saida = l.out && String(l.out).trim() ? (l.erro ? rot('Erro') : rot('Resultado')) + preHTML(l.out, l.erro ? 'erro' : '') : '';
+    switch (l.nome) {
+      case 'Bash': case 'PowerShell': return rot(l.nome === 'Bash' ? 'Comando (bash)' : 'Comando (PowerShell)') + preHTML(p.command || '') + saida;
+      case 'Edit': return (p.replace_all ? rot('Trocou em todo o arquivo') : '') + diffHTML(p.old_string, p.new_string) + (l.erro ? saida : '');
+      case 'MultiEdit': return (p.edits || []).map(e => diffHTML(e.old_string, e.new_string)).join('') + (l.erro ? saida : '');
+      case 'Write': return diffHTML('', p.content) + (l.erro ? saida : '');
+      case 'Read': return l.erro ? saida : null;
+      case 'Grep': return rot(`Procurou "${p.pattern || ''}"${p.path ? ' em ' + relativo(p.path, dir) : ''}${p.glob ? ' (' + p.glob + ')' : ''}`) + saida;
+      case 'Glob': return (p.path ? rot('Em ' + relativo(p.path, dir)) : '') + saida;
+      case 'WebFetch': return rot(p.url || '') + (p.prompt ? preHTML(p.prompt) : '') + saida;
+      case 'WebSearch': return saida || null;
+      case 'Task': case 'Agent': return rot('Pedido ao agente') + preHTML(p.prompt || '') + saida;
+      case 'Skill': return saida || null;
+      default: { const ks = Object.keys(p); return (ks.length ? rot('Dados') + preHTML(ks.map(k => `${k}: ${typeof p[k] === 'string' ? p[k] : JSON.stringify(p[k])}`).join('\n')) : '') + saida || null; }
+    }
+  }
+  const TODO = { completed: ['ok', 'feito'], in_progress: ['seta', 'agora'], pending: ['', 'falta'] };
+  function todoHTML(l) {
+    const L = (l.inp && l.inp.todos) || [];
+    return `<div class="c-todo">${L.map(x => { const s = TODO[x.status] || TODO.pending; return `<div class="${s[1]}"><span class="c-todo-i">${s[0] ? ico(s[0]) : ''}</span>${esc(x.status === 'in_progress' && x.activeForm ? x.activeForm : x.content)}</div>`; }).join('')}</div>`;
+  }
+  function ferrHTML(t, l, i, vivo) {
+    if (l.nome === 'TodoWrite') return `<div class="c-lin c-f fixo">${ico('doc')}<span>Lista de tarefas</span></div>${todoHTML(l)}`;
+    const corpo = corpoFerr(l, t.dir), pad = !!corpo, ab = corpo && (t.abertos[i] != null ? t.abertos[i] : t.abertos.todos != null ? t.abertos.todos : pad);
+    (t.padrao || (t.padrao = {}))[i] = pad;
+    const extra = l.nome === 'Edit' || l.nome === 'MultiEdit' ? (l.erro ? '' : 'salvo') : l.nome === 'Write' && l.inp ? `${nLinhas(l.inp.content)} linhas` : '';
+    const res = l.res ? (l.res === 'ok' || l.res === 'salvo' ? extra : l.res) : vivo ? 'rodando…' : '';
+    return `<button class="c-lin c-f ${ab ? 'ab' : ''} ${l.erro ? 'erro' : ''} ${corpo ? '' : 'fixo'}" data-act="abre:${i}"${corpo ? ` title="${ab ? 'Esconder' : 'Mostrar'} os detalhes"` : ''}>${ico(l.ico || 'doc')}<span class="c-f-v">${esc(l.verbo)}</span><span class="c-f-a">${esc(l.alvo)}</span>${res ? `<span class="r">${esc(res)}</span>` : ''}${corpo ? ico('seta', 'seta') : ''}</button>${ab ? `<div class="c-cx${anima(t, i)}">${corpo}</div>` : ''}`;
+  }
   function itensBlocos(t, passos) {
-    let h = '', grupo = []; const B = [];
+    let h = ''; const B = [];
     // editing a message: it and what follows are dimmed (what vanishes on resend)
     const ei = t.editando ? (t.editando.i != null ? t.editando.i : t.editando) : -1; let bi = -1;
     const corta = () => { if (h) { B.push(ei >= 0 && bi >= ei ? `<div class="c-sai">${h}</div>` : h); h = ''; } };
-    const fechar = () => {
-      if (!grupo.length) return; const [i0, a] = grupo[0]; bi = i0; const ab = t.abertos[i0] || t.abertos.todos;
-      const vs = [...new Set(grupo.map(g => g[1].verbo))], vb = (vs.length > 1 ? vs.slice(0, -1).join(', ') + ' e ' + vs[vs.length - 1] : vs[0]).toLowerCase();
-      h += `<button class="c-lin ${ab ? 'ab' : ''}" data-act="abre:${i0}">${ico(a.ico || 'doc')}${vb[0].toUpperCase() + vb.slice(1)} ${grupo.length} ${grupo.length > 1 ? 'itens' : 'item'}${ico('seta', 'seta')}</button>`;
-      if (ab) h += `<div class="c-det">${grupo.map(g => `<div><span>${esc(g[1].alvo)}</span><span class="r">${esc(g[1].res)}</span></div>`).join('')}</div>`;
-      grupo = []; corta();
-    };
+    const blocosVivos = t.estado === 'trabalhando' && t.vivo ? Object.values(t.vivo.blocos) : [];
     t.itens.forEach((l, i) => {
-      corta(); if (l.k !== 'ferr') fechar(); bi = i;
+      corta(); bi = i;
       if (!passos && (l.k === 'pensou' || l.k === 'ferr')) return;      // hidden steps (option, default): only what it writes stays
       if (l.k === 'eu') { const s = separaAnexos(l.txt); h += `<div class="c-eu${s.txt ? '' : ' so-anx'}">${s.A.length ? `<div class="c-anxs">${anexosHTML(s.A)}</div>` : ''}${esc(s.txt)}<button class="c-ed" data-act="editar:${i}" title="Editar e reenviar (a conversa volta a este ponto)">${ico('lapis')}</button></div>`; }
       else if (l.k === 'troca' || l.k === 'dim') h += `<div class="c-troca">${esc(l.txt)}</div>`;
       else if (l.k === 'pensou') {
-        if (!l.seg && t.estado === 'trabalhando' && t.vivo && Object.values(t.vivo.blocos).includes(l)) return;   // still thinking: "Pensando…" line already shows
-        const ab = (t.abertos[i] || t.abertos.todos) && l.txt;
-        h += `<button class="c-lin ${ab ? 'ab' : ''}" data-act="abre:${i}">${ico('lampada')}Pensou${l.seg ? ` por ${tempo(l.seg)}` : ''}${l.txt ? ico('seta', 'seta') : ''}</button>${ab ? `<div class="c-det">${esc(l.txt)}</div>` : ''}`;
+        const vivo = !l.seg && blocosVivos.includes(l);
+        if (vivo && !l.txt) return;                                          // nothing written yet: "Pensando…" line already shows
+        (t.padrao || (t.padrao = {}))[i] = false;               // thinking starts closed (12/11, his choice)
+        const ab = l.txt && (t.abertos[i] != null ? t.abertos[i] : t.abertos.todos != null ? t.abertos.todos : false);
+        if (ab && !l.html) l.html = md(l.txt);
+        h += `<button class="c-lin ${ab ? 'ab' : ''}" data-act="abre:${i}">${ico('lampada')}${vivo ? 'Pensando…' : `Pensou${l.seg ? ` por ${tempo(l.seg)}` : ''}`}${l.txt ? ico('seta', 'seta') : ''}</button>${ab ? `<div class="c-cx c-pens${anima(t, i)}">${l.html}</div>` : ''}`;
       }
-      else if (l.k === 'ferr') grupo.push([i, l]);
+      else if (l.k === 'ferr') h += ferrHTML(t, l, i, t.estado === 'trabalhando' && !l.res);
       else if (l.k === 'ia') { if (!l.html) l.html = md(l.md); h += `<div class="c-ia">${l.html}</div>`; }
+      else if (l.k === 'lado') h += `<div class="c-lado${l.esp ? ' esp' : ''}"><div class="c-lado-r">Resposta rápida · a tarefa continua</div><div class="c-lado-t">${l.esp ? 'Respondendo…' : esc(l.txt).replace(/\n/g, '<br>')}</div></div>`;
       else if (l.k === 'interrompido') h += `<div class="c-feito">${ico('parar')}Interrompido por você</div>`;
       else if (l.k === 'erro') h += `<div class="c-feito c-erro">${ico('x')}${esc(l.txt)}</div>`;
       else if (l.k === 'perm') h += permHTML(l, i);
     });
-    corta(); fechar();
+    corta();
     if (!B.length && t.vazio && t.estado !== 'trabalhando') B.push(`<div class="c-troca">${esc(t.vazio)}</div>`);
     return B;
   }
   const itensHTML = (t, passos) => itensBlocos(t, passos).join('');
   const abrindoHTML = () => `<div class="c-abrindo"><div class="c-trab">${claude()}Abrindo o Claude Code…</div></div>`;
 
-  // ---- "Modelo e pensamento" mini window ----
-  function popHTML(a, noChat, locais, popM) {
-    const ei = Math.max(0, ESF.findIndex(e => e[0] === a.esf)), loc = ehLocal(a.modelo);
-    const lista = [...MODELOS, ...locais.map(m => ({ id: m.n, n: m.n, d: 'no seu PC, sem internet · bem mais lento', local: true }))];
-    let h = `<div class="pop" data-parar="1"><div class="pop-tit">Modelo</div>`;
-    lista.forEach((m, i) => {
-      if (m.local && !lista[i - 1].local) h += `<div class="pop-sep"></div><div class="pop-tit">No seu PC · o Claude fica desconectado</div>`;
-      const d = m.local && noChat && !loc ? 'abre numa aba nova · bem mais lento' : (!m.local && noChat && loc ? m.d + ' · abre numa aba nova' : m.d);
-      h += `<div class="pop-it ${m.local ? 'loc' : ''} ${i === popM ? 'hl' : ''}" data-act="pm:${i}"><span class="pop-n">${m.local ? ico('cpu') : ''}${esc(m.n)}</span><span class="pop-d">${d}</span>${m.id === a.modelo ? ico('ok', 'ok') : ''}</div>`;
-    });
-    // models screen entry (always, even without local model yet)
-    if (!lista.some(m => m.local)) h += `<div class="pop-sep"></div><div class="pop-tit">No seu PC · o Claude fica desconectado</div>`;
-    h += `<div class="pop-it pop-mais" data-act="mx:abrir:"><svg class="ico " viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg><span class="pop-n">Baixar e gerenciar modelos…</span></div>`;
-    if (loc) {        // local AI: think (reasons first, much slower) or fast reply (direct)
-      h += `<div class="pop-sep"></div><div class="pop-tit">Modo<span class="pop-v">${modoN(a)}</span></div><div class="seg2">${['Rápido', 'Normal', 'Pensar'].map((n, i) => `<button class="${(+a.pensar || 0) === i ? 'on' : ''}" data-act="pp:${i}">${n}</button>`).join('')}</div>`;
-      h += `<div class="pop-d2">${['direto ao ponto · curto', 'resposta completa e organizada', 'raciocina antes · mais elaborada · mais lento'][+a.pensar || 0]}</div>`;
-    } else {
-      h += `<div class="pop-sep"></div><div class="pop-tit">Pensamento<span class="pop-v">${ESF[ei][1]}</span></div><div class="seg">`;
-      ESF.forEach((e, i) => { h += `<button class="${i === ei ? 'on' : ''} ${i <= ei ? 'ate' : ''}" data-act="pe:${i}" title="${e[1]}"><i style="height:${6 + i * 3}px"></i></button>`; });
-      h += `</div><div class="pop-d2">${ESF[ei][2]}</div>`;
-    }
-    h += `<div class="pop-rod"><span>${noChat ? 'Vale para esta conversa' : 'Vale para as próximas abas'}</span><span>↑↓ modelo · ←→ ${loc ? 'modo' : 'pensamento'}</span></div></div>`;
-    return { html: h, lista };
-  }
   function cmdsHTML(lista, sel) {
     return `<div class="pop cmds">${lista.map((c, i) => `<div class="pop-it ${i === sel ? 'hl' : ''}" data-act="cmd:${esc(c.n)}"><span class="pop-n">/${esc(c.n)}</span><span class="pop-d">${esc(c.d)}</span></div>`).join('')}<div class="pop-rod"><span>Comandos e skills</span><span>↑↓ escolhe · Tab completa</span></div></div>`;
   }
-  // ---- limit curtain: Claude conversation stays behind it until limit returns (local AI has no limit) ----
+  // ---- limit curtain: Claude conversation stays behind it until limit returns ----
   function cortinaHTML(volta) {
     const ms = window.RELOGIO_TESTE || Date.now(), d = new Date(volta * 1000), agora = new Date(ms), hm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     const amanha = new Date(agora); amanha.setDate(agora.getDate() + 1);
     const dia = d.toDateString() === agora.toDateString() ? `às ${hm}` : d.toDateString() === amanha.toDateString() ? `amanhã às ${hm}` : `em ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')} às ${hm}`;
     const min = Math.max(1, Math.round((volta * 1000 - ms) / 60000)), falta = min < 60 ? `${min} min` : `${Math.floor(min / 60)} h${min % 60 ? ' ' + String(min % 60).padStart(2, '0') + ' min' : ''}`;
-    return `<div class="ct-caixa"><div class="ct-ic">${ico('relogio')}</div><div class="ct-tit">Limite de uso atingido</div><div class="ct-txt">Este projeto só pode ser usado com o Claude quando o limite voltar, <b>${dia}</b> (daqui a ${falta}).</div>
-      <button class="c-btn prim" data-act="usarlocal">${ico('cpu')}Usar a IA local</button><div class="ct-dica">A IA local roda no seu PC e não depende do limite: com ela tudo funciona.</div></div>`;
+    return `<div class="ct-caixa"><div class="ct-ic">${ico('relogio')}</div><div class="ct-tit">Limite de uso atingido</div><div class="ct-txt">Este projeto só pode ser usado com o Claude quando o limite voltar, <b>${dia}</b> (daqui a ${falta}).</div><div class="ct-dica">A conversa continua aqui atrás; quando o limite voltar, é só seguir.</div></div>`;
   }  // conversation skeleton (same in app and prototype); o = ready content (prototype) or empty (app fills)
   function esqueletoHTML(o = {}) {
     const ver = (x) => x ? '' : ' style="display: none;"';
@@ -295,10 +319,10 @@ window.CHAT = (() => {
   }
   // ---- message box row buttons ----
   function linhaHTML(t, popAberto) {
-    const loc = ehLocal(t.modelo), ocupado = t.estado === 'trabalhando' || t.estado === 'pede', vazio = !(t.texto || '').trim();
+    const ocupado = t.estado === 'trabalhando' || t.estado === 'pede', vazio = !(t.texto || '').trim();
     return `${t.editando ? '<span class="ed-aviso">Editando a mensagem · Enter reenvia · Esc cancela</span>' : ''}<button class="ib" data-act="anexar" title="Anexar arquivo">${ico('clipe')}</button><button class="ib" data-act="barra" title="Comandos e skills (/)" style="font-weight:600">/</button><span class="esp"></span>
-      ${(t.tok || 0) + tokResp(t) ? `<button class="tk" data-act="modal:est" title="Tokens desta conversa, ao vivo (abre as Estatísticas)">${fmtN((t.tok || 0) + tokResp(t))} tokens</button>` : ''}${loc && t.tps ? `<span class="tk vel" title="Velocidade da última resposta da IA local (tokens por segundo, contando o pensamento)">${t.tps} tokens/s</span>` : ''}${window.M && M.chipModelo ? M.chipModelo(t) : ''}
-      ${ocupado ? `<button class="env parar" data-act="parar" title="Interromper (Esc)">${ico('parar')}</button>` : `<button class="env ${vazio ? 'off' : ''}" data-act="enviar" title="Enviar (Enter)">${ico('cima')}</button>`}`;
+      ${(t.tok || 0) + tokResp(t) ? `<button class="tk" data-act="modal:est" title="Tokens desta conversa, ao vivo (abre as Estatísticas)">${fmtN((t.tok || 0) + tokResp(t))} tokens</button>` : ''}${window.M && M.chipModelo ? M.chipModelo(t) : ''}
+      ${ocupado ? `<button class="env" data-segurar="enviar" data-dica="ENVIAR|${t.estado === 'trabalhando' ? 'Clique ou Enter: envia; ele responde na hora e segue a tarefa' : 'Clique ou Enter: vai para a fila (sai quando a resposta acabar)'}|Segure 2 s com o mouse: vira parar e para a resposta"><i class="enche"></i>${ico('cima', 'i-env')}${ico('parar', 'i-par')}</button>` : `<button class="env ${vazio ? 'off' : ''}" data-act="enviar" title="Enviar (Enter)">${ico('cima')}</button>`}`;
   }
   // ---- panel ----
   const PEDIDOS = { proj: ['Continue de onde parou.', 'O que falta eu testar?', 'Refaça o .exe.', 'Onde paramos?'], livre: ['Qual projeto eu testo primeiro?', 'Resuma o que precisa de mim.'] };
@@ -323,5 +347,5 @@ window.CHAT = (() => {
     h += `<div class="rod"><button data-act="term">${ico('term')}${t.verTerm ? 'Voltar ao chat' : 'Ver o terminal'}<kbd>Ctrl+\`</kbd></button></div>`;
     return h;
   }
-  return { separaAnexos, refsAnexos, anexosHTML, MODELOS, ESF, PEDIDOS, tempo, modoN, ehLocal, nomeMod, nomeEsf, ico, aplicar, itensHTML, itensBlocos, rodapeHTML, rodapeVivo, abrindoHTML, popHTML, cmdsHTML, linhaHTML, cortinaHTML, esqueletoHTML, painelHTML, ferramenta, md };
+  return { separaAnexos, refsAnexos, anexosHTML, MODELOS, ESF, PEDIDOS, tempo, nomeMod, nomeEsf, ico, aplicar, itensHTML, itensBlocos, rodapeHTML, rodapeVivo, abrindoHTML, cmdsHTML, linhaHTML, cortinaHTML, esqueletoHTML, painelHTML, ferramenta, md };
 })();

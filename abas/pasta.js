@@ -81,7 +81,7 @@ async function medir(dep) {
     const skills = [path.join(CL, 'skills'), path.join(CA, 'skills')];
     const nSk = skills.reduce((n, d) => n + subpastas(d).length, 0);
     await add('Skills', `${nSk} skills`, skills);
-    await add('Memórias e lições', 'O que o Claude aprendeu com você', [path.join(CA, 'memoria'), path.join(CA, 'memoria-fcc'), path.join(CA, 'aprendizado')]);
+    await add('Memórias', 'O que o Claude aprendeu com você', [path.join(CA, 'memoria'), path.join(CA, 'memoria-fcc')]);
     await add('Conversas', 'Histórico de cada projeto', [path.join(CL, 'projects')]);
     await add('Dados do programa', 'Opções, grupos e conversas locais', [C.dados()]);
     perfil = { tam: fmt(bPerfil), itens };

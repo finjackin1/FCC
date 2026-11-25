@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" data-tema="escuro"><head><meta charset="utf-8"><title>Assistente A: Cápsula</title>
+<link rel="stylesheet" href="comum.css">
+<style>
+/* janela fixa 520x260, transparente: só a cápsula e o balão aparecem; fica centrada logo acima da barra do Windows */
+#assist { position: absolute; left: calc(50% + 180px); bottom: 60px; width: 520px; height: 260px; transform: translateX(-50%); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 10px; }
+#assist.mostrar-limite { outline: 1px dashed color-mix(in srgb, var(--fg) 25%, transparent); outline-offset: 0; border-radius: 4px; }
+.balao { width: 100%; max-height: 170px; overflow: auto; padding: 14px 16px; border-radius: 16px; background: var(--vidro); backdrop-filter: blur(20px); border: 1px solid var(--linha);
+  box-shadow: var(--sombra); color: var(--fg); transform-origin: bottom center; transition: opacity .25s, transform .25s cubic-bezier(.2,.9,.3,1.2); }
+#assist:not([data-estado="falando"]):not([data-modo="texto"]) .balao { opacity: 0; transform: translateY(10px) scale(.97); pointer-events: none; }
+.balao small { display: block; color: var(--fg3); font-size: 12px; margin-bottom: 4px; }
+.capsula { width: 100%; height: 64px; padding: 0 10px 0 12px; border-radius: 32px; display: flex; align-items: center; gap: 12px;
+  background: var(--vidro); backdrop-filter: blur(20px); border: 1px solid var(--linha); box-shadow: var(--sombra); transition: transform .2s; }
+#assist.saindo .capsula, #assist.saindo .balao { animation: sai .5s ease-in forwards; }
+@keyframes sai { to { opacity: 0; transform: translateY(24px) scale(.96); } }
+.capsula .orbe { cursor: pointer; }
+.meio { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+.meio [data-fala] { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--fg2); }
+[data-fala][data-quem="voce"] { color: var(--fg); }
+#assist[data-estado="falando"] .meio [data-fala] { display: none; }
+#assist[data-estado="parado"] .ondas { display: none; }
+#assist[data-modo="texto"] .meio > :not(form), #assist[data-modo="voz"] .meio form { display: none; }
+.meio form { flex: 1; display: flex; gap: 6px; }
+#assist[data-estado="falando"] .ondas { flex: 1; justify-content: center; }
+</style></head><body>
+<div class="app-fundo"><i></i><i></i><i></i><i></i></div>
+<div class="barra-win"><span></span><span class="fcc"></span><span></span><span></span></div>
+
+<div class="proto">
+  <h1>A · Cápsula</h1>
+  <p>Igual ao Copilot Voice: uma cápsula fina aparece embaixo, no meio da tela, quando você diz “Ei, Claude” ou aperta o atalho. A resposta aparece num balão logo acima e some sozinha. Some quando você fica em silêncio ou toca no X.</p>
+  <p>Tamanho fixo: 520 × 260 (área transparente; só a cápsula e o balão aparecem). <label><input type="checkbox" id="lim"> mostrar limite</label></p>
+  <p>Bom para: voz rápida, atrapalha pouco. Fraco para: ver imagem editada, histórico.</p>
+  <p class="fontes">Fontes: Copilot Voice no Windows 11 (blogs.windows.com, 14/05/2025; windowscentral.com, artigo sobre “Hey Copilot”).</p>
+  <nav><a href="A.html" class="sel">A</a><a href="B.html">B</a><a href="C.html">C</a></nav>
+</div>
+
+<div id="assist" data-estado="parado" data-modo="voz">
+  <div class="balao"><small>Claude</small><div class="resp">É um artigo sobre o Copilot Voice: você chama pela palavra de ativação, um microfone pequeno aparece embaixo da tela e a conversa acaba quando você fica em silêncio ou toca no X.</div></div>
+  <div class="capsula">
+    <button class="orbe" data-mic title="Falar (ou diga “Ei, Claude”)" data-ico="mic"></button>
+    <div class="meio">
+      <span data-fala></span><div class="ondas" data-ondas="28"></div>
+      <form data-form><input class="campo" placeholder="Escreva para o Claude"><button class="ib" title="Enviar" data-ico="enviar"></button></form>
+    </div>
+    <div class="modo" data-modo><button data-m="voz" class="sel" title="Responder falando">Voz</button><button data-m="texto" title="Responder por escrito">Texto</button></div>
+    <button class="ib" title="Recortar parte da tela" data-ico="tela"></button>
+    <button class="ib fechar" data-fechar title="Fechar" data-ico="x"></button>
+  </div>
+</div>
+<script src="comum.js"></script>
+<script>
+document.getElementById("lim").onchange = e => document.getElementById("assist").classList.toggle("mostrar-limite", e.target.checked);
+// no balão, a resposta aparece junto com a voz
+window.aoMudar = e => { const r = document.querySelector(".resp"); if (e === "falando") digitar(r, RESPOSTA, 28); else if (e === "texto") r.textContent = RESPOSTA; };
+document.querySelector("[data-form]").addEventListener("submit", () => { const r = document.querySelector(".resp"); r.innerHTML = '<span class="pontos"><i></i><i></i><i></i></span>'; timers.push(setTimeout(() => digitar(r, RESPOSTA, 20), 900)); });
+</script>
+</body></html>

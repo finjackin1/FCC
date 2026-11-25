@@ -41,7 +41,7 @@ const inv = require('../inventario');
     assert.strictEqual(d.find((x) => x.nome === 'outra').essencial, false);
 
     const env = inv.envInstaladores();
-    assert.strictEqual(Object.keys(env).length, 9);
+    assert.strictEqual(Object.keys(env).length, 8);
     for (const v of Object.values(env)) {
       assert.ok(path.resolve(v).startsWith(raiz + path.sep), v);
       assert.ok(fs.existsSync(v));

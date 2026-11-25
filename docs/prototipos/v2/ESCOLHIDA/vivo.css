@@ -21,7 +21,7 @@
 .pj.sel::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--cor, var(--acento)); }
 .pj.sel .ic { background: var(--cor, var(--acento)); color: #fff; }
 .f-cab .big { background: var(--cor, var(--acento)) !important; color: #fff !important; box-shadow: 0 8px 24px color-mix(in srgb, var(--cor, var(--acento)) 40%, transparent); }
-.bia .ico:first-child { color: var(--acento); } .bia.loc .ico:first-child, .bia.loc b { color: var(--local); }
+.bia .ico:first-child { color: var(--acento); }
 
 /* animações (curtas; nada pisca sozinho a não ser o que está trabalhando) */
 .pj, .grp, .lin2, .j-it, .f-card, .f-mem, .busca, .bia { transition: background-color .15s, box-shadow .15s, transform .15s; }

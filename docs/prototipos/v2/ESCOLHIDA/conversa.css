@@ -28,11 +28,27 @@
 .c-lin:hover { background: var(--hover); color: var(--fg2); } .c-lin .ico { width: 14px; height: 14px; } .c-lin .seta { transition: transform .15s; } .c-lin.ab .seta { transform: rotate(90deg); }
 .c-det { margin: -10px 0 0 6px; padding: 4px 0 4px 14px; border-left: 2px solid var(--linha); color: var(--fg2); font-size: 13px; line-height: 20px; }
 .c-det div { display: flex; gap: 8px; } .c-det .r { color: var(--fg3); margin-left: auto; }
+/* detailed steps (like Claude Code Desktop "Verbose") */
+.c-f { max-width: 100%; min-width: 0; } .c-f .ico { flex: none; } .c-f-v { flex: none; color: var(--fg2); } .c-f-a { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-f .r { flex: none; color: var(--fg3); font-size: 12px; } .c-f .seta { flex: none; } .c-f.erro, .c-f.erro .c-f-v { color: var(--vm); }
+.c-f.fixo { cursor: default; } .c-f.fixo:hover { background: none; color: var(--fg3); }
+.c-cx { margin: -10px 0 0 6px; padding: 4px 0 4px 14px; border-left: 2px solid var(--linha); color: var(--fg2); font-size: 13px; line-height: 20px; display: flex; flex-direction: column; gap: 6px; min-width: 0; user-select: text; cursor: text; } .c-cx.anima { animation: c-cx-abre .15s ease-out; }
+@keyframes c-cx-abre { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.c-rot { font-size: 11px; line-height: 16px; color: var(--fg3); }
+.c-pre { margin: 0; font: 12px/18px "Cascadia Mono", Consolas, monospace; background: var(--bg2); border: 1px solid var(--linha); border-radius: 8px; padding: 6px 10px; max-height: 240px; overflow: auto; white-space: pre-wrap; word-break: break-word; color: var(--fg); }
+.c-pre.erro { color: var(--vm); }
+.c-diff span { display: block; } .c-diff .c-d-menos { background: color-mix(in srgb, var(--vm) 14%, transparent); color: var(--vm); } .c-diff .c-d-mais { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+.c-pre-mais { display: block; color: var(--fg3); font-style: italic; }
+.c-pens { color: var(--fg3); font-size: 13px; line-height: 20px; } .c-pens p + p { margin-top: 6px; }
+.c-todo { margin: -10px 0 0 6px; padding: 4px 0 4px 14px; border-left: 2px solid var(--linha); font-size: 13px; line-height: 22px; display: flex; flex-direction: column; }
+.c-todo > div { display: flex; align-items: center; gap: 8px; } .c-todo-i { width: 14px; height: 14px; flex: none; display: inline-flex; } .c-todo-i .ico { width: 14px; height: 14px; }
+.c-todo .feito { color: var(--fg3); text-decoration: line-through; } .c-todo .feito .c-todo-i { color: var(--ok); } .c-todo .agora { color: var(--fg); font-weight: 600; } .c-todo .agora .c-todo-i { color: var(--acento); } .c-todo .falta { color: var(--fg2); }
+.c-todo .falta .c-todo-i::before { content: ''; width: 10px; height: 10px; margin: 2px; border: 1.5px solid var(--fg3); border-radius: 50%; }
 .c-troca { align-self: center; font-size: 12px; color: var(--fg3); display: flex; align-items: center; gap: 8px; } .c-troca::before, .c-troca::after { content: ''; width: 48px; height: 1px; background: var(--linha); }
 .c-perm { border: 1px solid var(--linha); border-radius: 16px; padding: 14px 16px; background: var(--pop); box-shadow: 0 1px 6px rgba(32,33,36,.12); }
 .c-perm .tt { display: flex; align-items: center; gap: 8px; font-weight: 600; } .c-perm .tt .ico { color: var(--acento); }
 .c-perm .oq { margin: 6px 0 12px 24px; color: var(--fg2); } .c-perm .oq span { color: var(--fg3); font-size: 12px; margin-left: 6px; }
-.c-perm .bs { display: flex; gap: 8px; margin-left: 24px; } .c-perm .bs.perg { flex-wrap: wrap; margin: 8px 0 12px 24px; } .c-perm .oq.plano { max-height: 320px; overflow: auto; color: var(--fg); }
+.c-perm .bs { display: flex; flex-wrap: wrap; gap: 8px; margin-left: 24px; } .c-perm .bs.perg { flex-wrap: wrap; margin: 8px 0 12px 24px; } .c-perm .oq.plano { max-height: 320px; overflow: auto; color: var(--fg); }
 .c-feito { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg3); } .c-feito .ico { width: 14px; height: 14px; } .c-feito.c-erro { color: var(--vm); }
 .c-trab { display: flex; align-items: flex-start; gap: 8px; color: var(--fg3); } .c-trab .claude-ast { font-size: 18px; display: inline-block; width: 20px; line-height: 20px; text-align: center; flex: none; }
 .c-trab-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -96,4 +112,12 @@
 .anx-t { display: grid; gap: 2px; min-width: 0; line-height: 16px; } .anx-t b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .anx-t em { font-style: normal; font-size: 11px; color: var(--fg3); }
 .anx-x { position: absolute; top: -7px; right: -7px; width: 20px; height: 20px; padding: 0; border-radius: 10px; border: 1px solid var(--linha); background: var(--pop); color: var(--fg2); display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .12s; }
 .anx:hover .anx-x, .anx-x:focus-visible { opacity: 1; } .anx-x:hover { color: var(--fg); } .anx-x .ico { width: 12px; height: 12px; }
-.f-comeca .c-anxs { margin: 0 0 10px; }
+.f-comeca .c-anxs { margin: 0 0 10px; }/* 13/11 (pedido dele): enviar continua "enviar" com o Claude trabalhando; segurar 2 s enche de vermelho do centro e para */
+.compC .env { position: relative; overflow: hidden; } .compC .env > .ico { position: relative; }
+.compC .env .enche { position: absolute; inset: 0; border-radius: 50%; background: #C42B1C; box-shadow: 0 0 12px rgba(196,43,28,.55); transform: scale(0); transition: transform .12s; }
+.compC .env.segurando .enche { transform: scale(1); transition: transform 2s linear; }
+/* resposta rápida (mensagem enviada com ele trabalhando): responde na hora num ramo paralelo; a tarefa segue */
+.c-lado { align-self: flex-start; max-width: 85%; border: 1px solid var(--bg3); border-left: 3px solid var(--acento); border-radius: 4px 14px 14px 14px; padding: 8px 14px 10px; line-height: 22px; }
+.c-lado .c-lado-r { font-size: 11.5px; color: var(--fg3); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; } .c-lado .c-lado-r .ico { width: 12px; height: 12px; }
+.c-lado.esp .c-lado-t { color: var(--fg3); font-style: italic; }
+.compC .env .i-par { display: none; } .compC .env.segurando .i-env { display: none; } .compC .env.segurando .i-par { display: block; }   /* segurando: vira parar */

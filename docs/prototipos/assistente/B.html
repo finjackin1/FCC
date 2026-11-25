@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR" data-tema="escuro"><head><meta charset="utf-8"><title>Assistente B: Janelinha</title>
+<link rel="stylesheet" href="comum.css">
+<style>
+/* janela fixa 400x500 (4:5), canto inferior direito, acima da barra do Windows */
+#assist { position: absolute; right: 16px; bottom: 64px; width: 400px; height: 500px; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden;
+  background: var(--bg); border: 1px solid var(--linha); box-shadow: var(--sombra); animation: nasce .3s cubic-bezier(.2,.9,.3,1.1); transform-origin: bottom right; }
+@keyframes nasce { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+#assist.saindo { animation: sai .5s ease-in forwards; } @keyframes sai { to { opacity: 0; transform: translateY(20px) scale(.96); } }
+.cab { height: 44px; padding: 0 6px 0 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--linha); -webkit-app-region: drag; }
+.cab b { font-weight: 600; flex: 1; } .cab .ast { color: var(--acento); text-shadow: 0 0 12px color-mix(in srgb, var(--acento) 60%, transparent); }
+#assist[data-estado="pensando"] .cab .ast { animation: gira 1.6s linear infinite; display: inline-block; } @keyframes gira { to { transform: rotate(360deg); } }
+[data-lista] { flex: 1; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.msg { max-width: 85%; padding: 8px 12px; border-radius: 14px; }
+.msg.voce { align-self: flex-end; background: var(--bg3); border-bottom-right-radius: 4px; }
+.msg.ia { align-self: flex-start; background: var(--bg2); border: 1px solid var(--linha); border-bottom-left-radius: 4px; }
+.vazio { margin: auto; text-align: center; color: var(--fg3); }
+.vazio .sug { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.vazio .sug button { padding: 8px 12px; border-radius: 10px; background: var(--bg2); border: 1px solid var(--linha); color: var(--fg2); transition: background-color .15s, transform .15s; }
+.vazio .sug button:hover { background: var(--hover); transform: translateY(-1px); }
+[data-lista]:has(.msg) .vazio { display: none; }
+.pe { border-top: 1px solid var(--linha); padding: 10px 12px; min-height: 64px; display: flex; align-items: center; gap: 10px; background: var(--bg2); }
+#assist[data-modo="voz"] form, #assist[data-modo="texto"] .voz-pe { display: none; }
+.voz-pe { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+.voz-pe [data-fala] { flex: 1; min-width: 0; color: var(--fg2); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#assist[data-estado="falando"] .voz-pe [data-fala] { display: none; } #assist[data-estado="falando"] .ondas { flex: 1; justify-content: center; }
+#assist[data-estado="parado"] .ondas { display: none; }
+form { flex: 1; display: flex; gap: 6px; }
+</style></head><body>
+<div class="app-fundo"><i></i><i></i><i></i><i></i></div>
+<div class="barra-win"><span></span><span class="fcc"></span><span></span><span></span></div>
+
+<div class="proto">
+  <h1>B · Janelinha (recomendada)</h1>
+  <p>Uma janela pequena de conversa no canto de baixo à direita, por cima de tudo. Mostra o histórico, e embaixo fica o microfone (modo voz) ou a caixa de texto (modo texto). Dá para arrastar pelo título.</p>
+  <p>Tamanho fixo: 400 × 500 (4:5, em pé).</p>
+  <p>Bom para: ver recortes da tela, imagem editada (V4/V5) e histórico, sem tapar o meio da tela. É o padrão que você costuma escolher (janela “por cima”).</p>
+  <p class="fontes">Fontes: painel do Gemini por cima de apps no Android (“Perguntar sobre a tela”); Galaxy AI “Circle to Search” (recorte → resposta em painel embaixo); app Copilot do Windows em janela pequena.</p>
+  <nav><a href="A.html">A</a><a href="B.html" class="sel">B</a><a href="C.html">C</a></nav>
+</div>
+
+<div id="assist" data-estado="parado" data-modo="voz">
+  <div class="cab"><span class="ast">✻</span><b>Claude</b>
+    <div class="modo" data-modo><button data-m="voz" class="sel" title="Responder falando">Voz</button><button data-m="texto" title="Responder por escrito">Texto</button></div>
+    <button class="ib" title="Abrir esta conversa no FCC" data-ico="abrir"></button>
+    <button class="ib fechar" data-fechar title="Fechar" data-ico="x"></button>
+  </div>
+  <div data-lista>
+    <div class="vazio">Diga “Ei, Claude” ou escolha:
+      <div class="sug"><button title="Recortar parte da tela e perguntar">Analisar parte da tela</button><button title="Resumir a página aberta no navegador">Resumir esta página</button><button title="Melhorar o texto copiado e devolver pronto para colar">Melhorar texto copiado</button></div>
+    </div>
+  </div>
+  <div class="pe">
+    <div class="voz-pe"><button class="orbe" data-mic title="Falar (ou diga “Ei, Claude”)" data-ico="mic"></button><span data-fala></span><div class="ondas" data-ondas="24"></div></div>
+    <form data-form><input class="campo" placeholder="Escreva para o Claude"><button class="ib" title="Enviar" data-ico="enviar"></button></form>
+    <button class="ib" title="Recortar parte da tela" data-ico="tela"></button>
+  </div>
+</div>
+<script src="comum.js"></script>
+<script>
+// lista começa só com o "vazio": a conversa inteira limpa as mensagens mas mantém o vazio
+const vazio = document.querySelector(".vazio");
+window.aoMudar = () => { const l = document.querySelector("[data-lista]"); if (!l.contains(vazio)) l.prepend(vazio); };
+</script>
+</body></html>

@@ -1,6 +1,6 @@
 // Dados de exemplo e partes comuns às 3 propostas. Estado pelo endereço: proposta-B.html#perfil.outro
 const D = {
-  raiz: 'D:\\Programas\\FCC',
+  raiz: 'C:\\FCC',
   blocos: [
     { id:'perfil', n:'Perfil', tam:'2,4 GB', gb:2.4, cor:'var(--c-perfil)', d:'Regras, skills e conversas', leva:true },
     { id:'projects', n:'Projetos', tam:'9,6 GB', gb:9.6, cor:'var(--c-proj)', d:'Pasta projects: 11 projetos', leva:true },
@@ -12,8 +12,7 @@ const D = {
     ['Conversas','Todo o histórico, para retomar','2,3 GB'], ['Dados do programa','Abas, rascunhos, estatísticas','420 KB'] ],
   contas: [['voce@exemplo.com','Conta ativa · Pro','ok'], ['outra@exemplo.com','Login expirou','amb']],
   dentro: [
-    ['Claude Code','Motor das conversas','240 MB',true], ['Node.js','Usado pelo Claude nos projetos','92 MB'], ['.NET SDK','Compilar projetos em C#','783 MB'],
-    ['Ollama e 1 modelo','IA local','2,0 GB'] ],
+    ['Claude Code','Motor das conversas','240 MB',true], ['Node.js','Usado pelo Claude nos projetos','92 MB'], ['.NET SDK','Compilar projetos em C#','783 MB'] ],
   sistema: [
     ['Visual C++ Redistributable','12/10/2026 · necessário para o Claude Code','Instalado pelo FCC'], ['GitHub CLI','28/10/2026 · conversa "Publicar Controles"','Detectado'],
     ['Python 3.13','02/11/2026 · conversa "Testes Som"','Detectado'] ],

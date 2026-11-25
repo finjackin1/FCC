@@ -12,47 +12,13 @@
   const ESF = { low: 'Baixo', medium: 'Médio', high: 'Alto', xhigh: 'Muito alto', max: 'Máximo' };
   const salvar = (t) => M.salvar && M.salvar(t);
   M.nomeProj = nome;
-  // short local model name (Hugging Face one has owner, -GGUF and quant): hf.co/x/Qwen3-8B-GGUF:Q4_K_M -> Qwen3-8B
-  M.curto = (m) => String(m || '').replace(/^hf\.co\/[^/]+\//i, '').replace(/:(latest|[QqIi][\w.-]*)$/, '').replace(/-GGUF$/i, '');
   // order projects appear on rail (arrow keys follow it)
   M.ordem = () => [...S.fixos, ...S.grupos.flatMap(g => g.ab ? g.itens : []), ...semGrupo()].filter(n => { const x = pj(n); return x && (S.filtro === 'todos' || precisa(x)); });
 
-  // single AI button (rail foot, sheet and message box): shows active AI; opens AI window (F4)
-  M.chipModelo = (t) => { const loc = t && t.modelo ? M.ehLocal(t.modelo) : S.ia === 'local', ml = (t && loc && t.modelo) || (M.D.local && M.D.local.modelo) || '';
-    const md = t && !loc && t.modelo && !M.ehLocal(t.modelo) ? t.modelo : S.modelo, es = t && !loc && t.esf ? t.esf : S.esf;   // in conversation: ITS model (AI per conversation, auto mode)
-    return `<button class="bia ${loc ? 'loc' : ''}" data-act="iamenu" data-loc="${loc ? 1 : 0}" data-dica="IA ATIVA|${loc ? 'No seu PC: ' + esc(ml) + ' · sem limite' : 'Claude: ' + M.nomeMod(md) + ' · pensamento ' + ESF[es]}${S.op && S.op.auto && !loc ? ' · automático' : ''}|Clique: escolher Claude ou IA Local|F4: configurações completas">${ico(loc ? 'cpu' : 'nuvem')}<b>${loc ? esc(M.curto(ml)) : M.nomeMod(md)}</b><span class="e">${loc ? ['Rápido', 'Normal', 'Pensar'][+S.pensar || 0] : ESF[es]}</span>${ico('baixo', 'mini')}</button>`; };
-  // 25/10 (user request): AI button opens short menu with Claude and Local AI; each one's gear opens full window (F4)
-  let iaBtn = null, iaTecla = false; const iam = () => document.querySelector('.iam');
-  const fecharIaMenu = () => { const m = iam(); if (m) m.remove(); };
-  document.addEventListener('click', (e) => { const b = e.target.closest('[data-act="iamenu"]'); if (b) { iaBtn = b; iaTecla = e.detail === 0; return; } if (iam() && (!e.target.closest('.iam') || e.target.closest('.iam-loja'))) setTimeout(fecharIaMenu); }, true);
-  document.addEventListener('keydown', (e) => { const m = iam(); if (!m) return; const it = [...m.querySelectorAll('.iam-it')], i = it.indexOf(document.activeElement.closest('.iam-it'));
-    if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); fecharIaMenu(); if (iaBtn) iaBtn.focus(); }
-    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); e.stopImmediatePropagation(); it[(i + (e.key === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus(); }
-    else if (e.key === 'Enter' && i >= 0) { e.preventDefault(); e.stopImmediatePropagation(); M.agir(it[i].dataset.act); } }, true);
-  function abrirIaMenu() {
-    if (iam()) return fecharIaMenu(); if (!iaBtn) return;
-    const loc = iaBtn.dataset.loc === '1', ml = (M.D.local && M.D.local.modelo) || '', r = iaBtn.getBoundingClientRect();
-    const semConta = !(M.D.conta && M.D.conta.email);   // no account: Claude shows with lock and leads to 'Isso usa o Claude' notice
-    const L = [['claude', 'Claude', semConta ? 'entrar para usar · a mais inteligente' : M.nomeMod(S.modelo) + ' · pensamento ' + ESF[S.esf], 'nuvem', !loc, 0], ['local', 'IA Local', ml ? M.curto(ml) + ' · no seu PC, sem limite' : 'nenhum modelo ainda: baixar na loja', 'cpu', loc, 1]];
-    const d = document.createElement('div'); d.className = 'iam'; d.setAttribute('role', 'menu');
-    d.innerHTML = L.map(([k, n, s, ic, on, ab]) => `<div class="iam-it ${on ? 'on' : ''} ${k === 'local' ? 'loc' : ''}" role="menuitem" tabindex="0" data-act="${k === 'claude' && semConta ? 'fx-ir:bloqueado' : 'ia:' + k}" data-dica="${n.toUpperCase()}|Clique: ${k === 'claude' && semConta ? 'precisa entrar na conta do Claude' : on ? 'já é a IA ativa' : 'passa a conversa para ' + (k === 'local' ? 'a IA Local' : 'o Claude')}">
-      <span class="iam-ic">${ico(ic)}</span><div class="iam-tx"><b>${n}</b><small>${esc(s)}</small></div>${k === 'claude' && semConta ? '<span class="iam-cad">' + M.arteE.I('cad') + '</span>' : on ? ico('ok', 'iam-v') : ''}
-      <button class="ib iam-cfg" data-act="iacfg:${ab}" data-dica="CONFIGURAR ${n.toUpperCase()}|Abre o menu completo: modelo, pensamento${k === 'local' ? ', loja de modelos' : ', conta'}">${ico('eng')}</button></div>`).join('')
-      + `<div class="iam-sep"></div><div class="iam-it loc iam-loja" role="menuitem" tabindex="0" data-act="Lloja:0" data-dica="LOJA DE MODELOS|Clique: abre a loja para baixar IAs que rodam no seu PC"><span class="iam-ic">${ico('mais')}</span><div class="iam-tx"><b>Loja de modelos</b><small>baixar IAs para o seu PC · grátis</small></div></div>`;   // 26/10: visible store entry (user request)
-    document.body.appendChild(d);
-    const w = d.offsetWidth, h = d.offsetHeight, cima = r.top - h - 6 >= 8 && r.bottom + h + 6 > innerHeight - 8;
-    d.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left)) + 'px'; d.style.top = (cima ? r.top - h - 6 : r.bottom + 6) + 'px'; d.style.transformOrigin = (cima ? 'bottom ' : 'top ') + 'left';
-    if (iaTecla) (d.querySelector('.iam-it.on') || d.querySelector('.iam-it')).focus();   // visible focus only when opened via keyboard
-  }
-  const agIa = M.agir;
-  M.agir = (a) => {
-    if (a === 'iamenu') return abrirIaMenu();
-    if (a === 'voltar-escolha') { fecharIaMenu(); Object.assign(S, { escolha: true, modal: null, fluxo: null, pop: null }); return M.draw(); }   // 26/10: back to welcome screen
-    if (a.startsWith('iacfg:')) { fecharIaMenu(); S.modal = 'ia'; S.jAba = +a.slice(6); S.pop = null; return M.draw(); }
-    if ((a.startsWith('ia:') || a.startsWith('fx-') || a.startsWith('Lloja:')) && iam()) { fecharIaMenu(); }
-    return agIa(a);
-  };
-  M.iaDe = (a) => a && a.modelo ? (M.ehLocal(a.modelo) ? M.curto(a.modelo) + ' · no seu PC' : M.nomeMod(a.modelo) + ' · ' + ESF[a.esf || 'medium']) : '';
+  // single AI button (rail foot, sheet and message box): shows Claude model and thinking; opens AI window (F4); no account → sign-in notice
+  M.chipModelo = (t) => { const md = t && t.modelo ? t.modelo : S.modelo, es = t && t.esf ? t.esf : S.esf, semConta = !(M.D.conta && M.D.conta.email);   // in conversation: ITS model (auto mode)
+    return `<button class="bia" data-act="${semConta ? 'fx-ir:bloqueado' : 'modal:ia'}" data-dica="IA ATIVA|Claude: ${M.nomeMod(md)} · pensamento ${ESF[es]}${S.op && S.op.auto ? ' · automático' : ''}|${semConta ? 'Clique: precisa entrar na conta do Claude' : 'Clique ou F4: configurações completas'}">${ico('nuvem')}<b>${M.nomeMod(md)}</b><span class="e">${ESF[es]}</span>${ico('baixo', 'mini')}</button>`; };
+  M.iaDe = (a) => a && a.modelo ? M.nomeMod(a.modelo) + ' · ' + ESF[a.esf || 'medium'] : '';
   M.F4 = 'modal:ia';
 
   function item(x) {
@@ -60,7 +26,7 @@
     const st = a ? (a.estado === 'trabalhando' ? '<span class="gira"></span>' : '<span class="aberta" title="conversa aberta"></span>') : '';
     const n = S.ren === x.n ? `<input class="ren" value="${esc(nome(x))}" data-ren="${esc(x.n)}">` : `<div>${esc(nome(x))}</div>`;
     return `<div class="pj ${sel ? 'sel' : ''}" draggable="true" data-arr="${esc(x.n)}" data-act="sel:${i}" data-proj="${i}"><div class="ic">${M.icoProj(x)}<span class="dot d-${x.st}"></span></div>
-      <div class="n">${n}<small>${a ? (a.estado === 'trabalhando' ? 'trabalhando · ' : '') + esc(M.iaDe(a)) : M.ROT[x.st] + (S.alias[x.n] ? ' · ' + esc(x.n) : '')}</small></div><span class="st">${a && M.ehLocal(a.modelo) ? ico('cpu') : ''}${st}</span>
+      <div class="n">${n}<small>${a ? (a.estado === 'trabalhando' ? 'trabalhando · ' : '') + esc(M.iaDe(a)) : M.ROT[x.st] + (S.alias[x.n] ? ' · ' + esc(x.n) : '')}</small></div><span class="st">${st}</span>
       <button class="mais" data-act="menu:${esc(x.n)}" title="Mais">⋯</button></div>`;
   }
   const lista = (ns) => ns.map(pj).filter(x => x && (S.filtro === 'todos' || precisa(x))).map(item).join('');
@@ -75,9 +41,9 @@
 
   // ---- pieces (app draws each in its place; prototype joins all in LAYOUT) ----
   M.topoHTML = () => { const q = M.projAtual(), t = M.aba();
-    return `<div class="marca">${ast()}Claude Code</div><div class="onde">${q ? `<b>${esc(nome(q))}</b>${t && t.nomeado ? esc(t.titulo) : esc(q.dir ||'D:\\Projetos\\' + q.n)}` : t ? `<b>${esc(t.titulo || 'Chat livre')}</b>` : ''}</div>
-      ${S.limite && S.ia === 'claude' ? `<button class="estado lim" data-act="modal:ia">${ico('relogio')}Claude volta às ${S.limite}</button>` : ''}${S.pendente ? `<button class="estado nova" data-act="modal:opcoes:4">${ico('atual')}Versão nova</button>` : ''}
-      <button class="ib f-volta" data-act="voltar-escolha" data-dica="ESCOLHER IA|Clique: volta para a tela de escolha entre Claude e IA Local">${ico('seta')}</button><button class="ib" data-act="modal:est" data-dica="ESTATÍSTICAS|F8">${ico('graf')}</button><button class="ib" data-act="modal:opcoes" data-dica="OPÇÕES|F2">${ico('eng')}</button><button class="ib" data-act="modal:ajuda" data-dica="ATALHOS|F1">${ico('ajuda')}</button>
+    return `<div class="marca">${ast()}Claude Code</div><div class="onde">${q ? `<b>${esc(nome(q))}</b>${t && t.nomeado ? esc(t.titulo) : esc(q.dir ||'C:\\Projetos\\' + q.n)}` : t ? `<b>${esc(t.titulo || 'Chat livre')}</b>` : ''}</div>
+      ${S.limite ? `<button class="estado lim" data-act="modal:ia">${ico('relogio')}Claude volta às ${S.limite}</button>` : ''}${S.pendente ? `<button class="estado nova" data-act="modal:opcoes:4">${ico('atual')}Versão nova</button>` : ''}
+      <button class="ib" data-act="modal:est" data-dica="ESTATÍSTICAS|F8">${ico('graf')}</button><button class="ib" data-act="modal:opcoes" data-dica="OPÇÕES|F2">${ico('eng')}</button><button class="ib" data-act="modal:ajuda" data-dica="ATALHOS|F1">${ico('ajuda')}</button>
       ${M.botoesJanela()}`; };
   M.trilhoHTML = () => {
     const nPrec = P.filter(precisa).length, livres = M.livres ? M.livres() : [];
@@ -96,12 +62,13 @@
       const sg = semGrupo(); if (sg.length) h += `<div class="grp sem" data-grupo="">${S.grupos.length ? 'Sem grupo' : 'Projetos'}<small>${sg.length}</small></div>${lista(sg)}`;
       h += `<button class="novo-g" data-act="novogrupo:">${ico('mais')}Novo grupo</button>`;
     }
+    const ct = M.D.conta;
     return h + `</div>${menuHTML()}<div class="pe"><div class="lin2" data-act="modal:pasta" data-dica="PASTA DO FCC|Perfil, projetos, ferramentas, enviar a um amigo e remover"><span class="ic2">${ico('pasta')}</span>Pasta do FCC</div><div class="lin2" data-act="modal:regras" data-dica="REGRAS E MEMÓRIA|Regras da casa, memória do Claude e skills"><span class="ic2">${ico('doc')}</span>Regras e memória</div>
-      <div class="lin2" data-act="modal:conta"><span class="av">${esc(((M.D.conta && M.D.conta.email) || '?')[0].toUpperCase())}</span>${esc((M.D.conta && M.D.conta.email) || 'Entrar na conta')}${M.D.conta && M.D.conta.plano ? ' · ' + esc(M.D.conta.plano) : ''}</div>${M.barraUso ? M.barraUso() : ''}</div>`;
+      <div class="lin2" data-act="modal:conta"><span class="av">${esc(((ct && ct.email) || '?')[0].toUpperCase())}</span>${esc((ct && ct.email) || 'Entrar na conta')}${ct && ct.plano ? ' · ' + esc(ct.plano) : ''}</div>${M.barraUso ? M.barraUso() : ''}</div>`;
   };
   // project sheet (like Claude Desktop project page): start/continue, past conversations, instructions and memory
   M.fichaHTML = (q) => {
-    if (S.vazio || !q) return `<div class="vz">Nenhum projeto. Crie uma pasta com CLAUDE.md em ${esc(M.D.raiz || 'D:\\Projetos')}.</div>`;
+    if (S.vazio || !q) return `<div class="vz">Nenhum projeto. Crie uma pasta com CLAUDE.md em ${esc(M.D.raiz || 'C:\\Projetos')}.</div>`;
     const i = P.indexOf(q), a = M.conversaDe(q), conv = q.conversas || [], mem = q.mem || [];
     return `<div class="ficha"><div class="f-meio">
       <div class="f-cab"><div class="big">${M.icoProj(q)}</div><div><h1>${S.ren === q.n ? `<input class="ren grande" value="${esc(nome(q))}" data-ren="${esc(q.n)}">` : `${esc(nome(q))}<button class="ib" data-act="renomear:${esc(q.n)}" title="Renomear">${ico('lapis')}</button>`}</h1>
@@ -163,7 +130,6 @@
     if (k === 'filtro') { S.filtro = v; return M.draw(); }
     if (k === 'tstab') { S.tstAb = S.tstAb === v ? null : v; S.tstT = Date.now(); return M.draw(); }
     if (k === 'avisar') return M.avisarConta();
-    if (k === 'usarlocal') { S.modal = 'ia'; S.jAba = 1; return M.draw(); }
     agirBase(a);
   };
   const salvarRen = (el) => { const v = el.value.trim(); const k = el.dataset.ren; if (/^[rp]:/.test(k)) { S.ren = null; if (v && M.rascunhoAcao) M.rascunhoAcao(k[0] === 'r' ? 'renomear' : 'projeto', k.slice(2), v); else M.draw(); return; } if (k.startsWith('g:')) { const g = S.grupos.find(x => x.id === k.slice(2)); if (g && v) g.n = v; } else { if (v && v !== k) S.alias[k] = v; else delete S.alias[k]; } S.ren = null; salvar('trilho'); M.draw(); };

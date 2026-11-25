@@ -17,7 +17,7 @@
 #fluxo .fx-btn { height: 40px; padding: 0 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; font: 600 14px "Segoe UI", sans-serif; border: 1px solid #2b3040; color: #f1f3f9; background: none; cursor: pointer; transition: transform .12s, filter .12s, background-color .12s; }
 #fluxo .fx-btn:hover { background: #222736; } #fluxo .fx-btn:active { transform: scale(.97); }
 #fluxo .fx-btn.prim { border: 0; color: #fff; background: linear-gradient(135deg, var(--acento), color-mix(in srgb, var(--acento) 70%, var(--acento2))); box-shadow: 0 6px 20px color-mix(in srgb, var(--acento) 40%, transparent); }
-#fluxo .fx-btn.prim:hover { filter: brightness(1.08); } #fluxo .fx-btn.loc { background: linear-gradient(135deg, var(--local), color-mix(in srgb, var(--local) 60%, var(--local2))); box-shadow: 0 6px 20px color-mix(in srgb, var(--local) 40%, transparent); border: 0; color: #fff; }
+#fluxo .fx-btn.prim:hover { filter: brightness(1.08); }
 #fluxo .fx-btn kbd { font: 11px "Segoe UI"; opacity: .7; border: 1px solid rgba(255,255,255,.3); border-radius: 4px; padding: 0 4px; }
 #fluxo .fx-lnk { color: #8a92aa; font: 13px "Segoe UI", sans-serif; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; cursor: pointer; } #fluxo .fx-lnk:hover { color: #f1f3f9; }
 #fluxo .fx-marca { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; margin-bottom: 20px; background: #252a38; }
@@ -29,7 +29,7 @@
 #fluxo .fx-it b { font-size: 14px; font-weight: 600; } #fluxo .fx-it small { display: block; color: #8a92aa; font-size: 12px; } #fluxo .fx-it .tx { flex: 1; } #fluxo .fx-it .st { font-size: 12px; color: #8a92aa; }
 #fluxo .fx-ok { width: 22px; height: 22px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, #34d399 20%, transparent); color: #34d399; }
 #fluxo .fx-ok path { stroke-dasharray: 20; animation: fx-risca .45s .1s ease-out backwards; } @keyframes fx-risca { from { stroke-dashoffset: 20; } }
-#fluxo .fx-gira { width: 18px; height: 18px; border: 2px solid var(--acento); border-right-color: transparent; border-radius: 50%; animation: fx-gira .8s linear infinite; flex: none; } #fluxo .fx-gira.loc { border-color: var(--local); border-right-color: transparent; }
+#fluxo .fx-gira { width: 18px; height: 18px; border: 2px solid var(--acento); border-right-color: transparent; border-radius: 50%; animation: fx-gira .8s linear infinite; flex: none; }
 @keyframes fx-gira { to { transform: rotate(360deg); } }
 #fluxo .fx-barra { height: 6px; border-radius: 3px; background: #252a38; overflow: hidden; margin-top: 8px; } #fluxo .fx-barra i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--local), var(--local2)); transition: width .6s var(--curva); }
 #fluxo .fx-suc { width: 72px; height: 72px; border-radius: 36px; display: grid; place-items: center; background: color-mix(in srgb, #34d399 16%, transparent); margin-bottom: 20px; animation: fx-pop .5s var(--curva); }
@@ -38,15 +38,6 @@
 #fluxo .fx-conta { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 12px 14px; border-radius: 14px; background: #14161d; border: 1px solid #2b3040; }
 #fluxo .fx-conta .av { width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; background: var(--acento); color: #fff; font-weight: 700; } #fluxo .fx-conta small { display: block; color: #8a92aa; font-size: 12px; }
 #fluxo .fx-pc { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; } #fluxo .fx-pc span { font-size: 12px; color: #c2c8da; padding: 4px 10px; border-radius: 12px; background: #252a38; display: inline-flex; gap: 6px; align-items: center; }
-#fluxo .fx-mods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
-#fluxo .fx-mod { border-radius: 18px; padding: 18px; background: #14161d; border: 1px solid #2b3040; display: flex; flex-direction: column; gap: 8px; transition: transform .15s, border-color .15s, box-shadow .2s; cursor: pointer; position: relative; text-align: left; color: inherit; font: inherit; }
-#fluxo .fx-mod:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--local) 50%, #2b3040); box-shadow: 0 12px 30px rgba(0,0,0,.35); }
-#fluxo .fx-mod.rec { border-color: color-mix(in srgb, var(--local) 60%, #2b3040); box-shadow: 0 0 0 1px color-mix(in srgb, var(--local) 40%, transparent), 0 12px 30px color-mix(in srgb, var(--local) 14%, transparent); }
-#fluxo .fx-mod .tag { position: absolute; top: -10px; left: 16px; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 10px; background: linear-gradient(135deg, var(--local), var(--local2)); color: #fff; }
-#fluxo .fx-mod b { font-size: 17px; } #fluxo .fx-mod .de { color: #8a92aa; font-size: 12px; } #fluxo .fx-mod p { font-size: 13px; color: #c2c8da; margin: 0; flex: 1; }
-#fluxo .fx-mod .cabe { font-size: 12px; display: flex; align-items: center; gap: 6px; } #fluxo .fx-mod .cabe i { width: 8px; height: 8px; border-radius: 4px; background: #34d399; } #fluxo .fx-mod .cabe.meio i { background: #fbbf24; }
-#fluxo .fx-mod .rod { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; } #fluxo .fx-mod .gb { color: #8a92aa; font-size: 12px; }
-#fluxo .fx-mod .fx-btn { height: 34px; pointer-events: none; }
 #fluxo .fx-op { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; border: 1px solid #2b3040; background: #14161d; margin-top: 8px; cursor: pointer; transition: border-color .15s, background-color .15s; width: 100%; text-align: left; color: inherit; font: inherit; }
 #fluxo .fx-op:hover { background: #222736; } #fluxo .fx-op.on { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 8%, #14161d); }
 #fluxo .fx-op .rd { width: 18px; height: 18px; border-radius: 9px; border: 2px solid #8a92aa; flex: none; display: grid; place-items: center; transition: border-color .15s; } #fluxo .fx-op.on .rd { border-color: var(--acento); }

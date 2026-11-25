@@ -1,0 +1,4 @@
+Teste de tela por clique (sem Claude real, login falso).
+1) node abas\ferramentas\teste-tela\iniciar.js   (copia o app para dist\FCC\temp\teste, abre na porta 9333)
+2) node abas\ferramentas\teste-tela\cdp.js ajuda.js   (carrega as funções), depois cdp.js t3.js / t4.js / t9.js
+Ao terminar: matar o electron de temp\teste, "cmd /c rmdir temp\teste\app\node_modules" (é JUNCTION, nunca apagar recursivo antes) e só então apagar temp\teste.

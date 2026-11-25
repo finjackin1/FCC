@@ -134,7 +134,7 @@
     if (acao === 'desinstalar') return { ok: true, msg: 'Abriria o desinstalador' };
     if (acao === 'tirar') { trocaDemo((p) => Object.assign(p, { dentro: p.dentro.filter((d) => d[0] !== arg) })); return { ok: true }; }
     if (acao === 'ignorar') { trocaDemo((p) => Object.assign(p, { sistema: p.sistema.filter((d) => d.id !== arg) })); return { ok: true }; }
-    if (acao === 'enviar') return { ok: true, pasta: 'D:\\Downloads\\perfil-para-enviar', tam: '14 MB', retidos: 0, caminhosPessoais: 0 };
+    if (acao === 'enviar') return { ok: true, pasta: 'C:\\Downloads\\perfil-para-enviar', tam: '14 MB', retidos: 0, caminhosPessoais: 0 };
     if (acao === 'remover') return { ok: true };
     return { ok: false, msg: 'ação desconhecida' };
   };
@@ -233,7 +233,7 @@
 
   // ---- appearance scenes (each sets S.pa fully; cena() resets M.D to demo data) ----
   const com = (mud) => () => { S.modal = 'pasta'; S.pa = Object.assign(novoEstado(), { entra: false }, mud.pa || {}); M.D = Object.assign({}, M.D, { pasta: mud.d === 'nada' ? null : Object.assign({}, M.D.pasta, mud.d || {}) }); };
-  const env = { pasta: 'D:\\Downloads\\perfil-para-enviar', tam: '14 MB', retidos: 0, caminhosPessoais: 0 };
+  const env = { pasta: 'C:\\Downloads\\perfil-para-enviar', tam: '14 MB', retidos: 0, caminhosPessoais: 0 };
   Object.assign(M.CENAS, {
     pasta: com({}), 'pasta-medindo': com({ d: 'nada' }), 'pasta-erro': com({ d: { erro: 'EPERM: operation not permitted, scandir' } }),
     'pasta-vazio': () => { com({})(); M.D.pasta.blocos = M.D.pasta.blocos.map((b) => Object.assign({}, b, { tam: '0 KB', gb: 0 })); },   // fresh install: bar must still fill

@@ -93,7 +93,30 @@ try {
   // 6. rodando(): fixture exe is not running
   assert.strictEqual(A.rodando(R), false);
   console.log('ok rodando: false for fixture root');
+
+  // 7. old flat install -> new layout (launcher + licenses at root, program in modulos\): loose runtime goes, user folders stay
+  preparaRaiz();
+  for (const f of ['ffmpeg.dll', 'icudtl.dat', 'locales\\pt-BR.pak', 'resources\\casa\\x.md', 'LICENSE-ELECTRON.txt', 'version']) grava(path.join(R, f), 'velho ' + f);
+  grava(path.join(R, 'LICENSE.txt'), 'gpl-velha'); grava(path.join(R, 'nota-do-usuario.txt'), 'minha');
+  const pn = path.join(R, '..', 'pacote-modulos-teste'); fs.rmSync(pn, { recursive: true, force: true });
+  grava(path.join(pn, 'FCC.exe'), 'lancador'); grava(path.join(pn, 'LICENSE.txt'), 'gpl');
+  for (const f of ['FCC.exe', 'ffmpeg.dll', 'icudtl.dat', 'locales\\pt-BR.pak', 'resources\\casa\\x.md', 'resources\\app\\main.js', 'resources\\app\\tela\\a.css', 'LICENSE-ELECTRON.txt', 'version']) grava(path.join(pn, 'modulos', f), 'novo ' + f);
+  const a7 = Object.fromEntries(protegidos().map(f => [f, sha(f)]));
+  const d7 = A.diferencas(pn, R);
+  assert(['ffmpeg.dll', 'icudtl.dat', 'locales', 'resources', 'LICENSE-ELECTRON.txt', 'version'].every(n => d7.removidos.includes(n)), 'diferencas must list loose files: ' + d7.removidos);
+  assert(!A.soTela(d7));
+  A.aplicar(pn, R);
+  assert.deepStrictEqual(fs.readdirSync(R).sort(), ['FCC.exe', 'LICENSE.txt', 'conta', 'ferramentas', 'inventario', 'modulos', 'nota-do-usuario.txt', 'perfil', 'projects', 'temp']);
+  assert.strictEqual(lerR('FCC.exe'), 'lancador'); assert.strictEqual(lerR('modulos\\resources\\app\\main.js'), 'novo resources\\app\\main.js');
+  for (const f of protegidos()) assert.strictEqual(sha(f), a7[f], 'protected changed by layout move: ' + f);
+  // next build in the new layout: stale file under modulos\resources\app goes, screen-only change is detected
+  grava(path.join(pn, 'modulos', 'resources', 'app', 'tela', 'a.css'), 'novo 2');
+  const d8 = A.diferencas(pn, R); assert.deepStrictEqual(d8, { mudados: ['modulos\\resources\\app\\tela\\a.css'], removidos: [] }); assert(A.soTela(d8));
+  grava(path.join(R, 'modulos', 'resources', 'app', 'velho.js'), 'x');
+  const r8 = A.aplicar(pn, R); assert.strictEqual(r8.removidos, 1); assert(!fs.existsSync(path.join(R, 'modulos', 'resources', 'app', 'velho.js')));
+  fs.rmSync(pn, { recursive: true, force: true });
+  console.log('ok modulos: flat install moved to modulos\\, user folders identical, screen-only build detected');
   console.log('ok testar-atualizar');
 } finally {
-  for (const d of [R, path.join(R, '..', 'pacote-atualizar-teste'), path.join(R, '..', 'pacote-malicioso-teste')]) fs.rmSync(d, { recursive: true, force: true });
+  for (const d of [R, path.join(R, '..', 'pacote-atualizar-teste'), path.join(R, '..', 'pacote-malicioso-teste'), path.join(R, '..', 'pacote-modulos-teste')]) fs.rmSync(d, { recursive: true, force: true });
 }

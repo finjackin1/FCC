@@ -6,20 +6,20 @@ O que ele faz:
 
 - lista os projetos e mostra, de cada um, onde o trabalho parou e o que falta testar;
 - abre várias conversas do Claude Code em abas e lembra delas quando você fecha e abre de novo;
-- mostra quanto da sessão e da semana da sua conta já foi usado e quando o limite volta;
-- tem um chat livre, fora de qualquer projeto;
-- pode usar uma IA local (Ollama) no lugar do Claude, se você quiser;
+- mostra quanto da sessão e da semana já foi usado e quando o limite volta, em cada conta guardada (dá para trocar de conta sem novo login);
+- tem um chat livre, fora de qualquer projeto, e uma janelinha de assistente (Ctrl+Alt+Espaço) que pode responder em voz alta;
+- dá ao Claude ferramentas próprias: trocar de modelo e pensamento conforme a tarefa, registrar onde o trabalho parou, pedir uma segunda opinião, avisar no Windows quando terminar e usar um navegador que aparece no painel **Prévia**;
 - guarda regras, skills e memórias numa pasta `perfil` ao lado do programa. Copiou a pasta, levou tudo junto para outro PC.
 
 ## Baixar e usar
 
 1. Baixe o `.zip` mais recente na página **Releases** deste repositório.
-2. Extraia numa pasta sua, por exemplo `D:\FCC`. Não precisa instalar nem ser administrador.
-3. Abra `FCC.exe`.
+2. Extraia onde quiser, por exemplo em `C:\`. O zip traz a pasta `FCC`. Não precisa instalar nem ser administrador.
+3. Abra o `FCC.exe` de dentro dessa pasta.
 
 Na primeira vez o programa pede o login na sua conta do Claude. Se o Claude Code ainda não estiver no PC, ele oferece instalar usando o instalador oficial da Anthropic.
 
-Tudo que o FCC grava fica dentro da pasta onde ele está:
+Na pasta ficam só o `FCC.exe`, as licenças e a pasta `modulos`, com os arquivos do programa. Tudo que o FCC grava também fica ali dentro:
 
 | Pasta | O que tem |
 | --- | --- |
@@ -42,7 +42,8 @@ Na janela **Pasta do FCC** há a opção de remover o programa. Antes de apagar,
 
 - Windows 10 ou 11, 64 bits.
 - Uma conta do Claude com acesso ao Claude Code.
-- Internet para conversar com o Claude. A IA local (opcional) funciona sem internet depois de baixado o modelo.
+- Internet para conversar com o Claude.
+- Para a voz do assistente: Python instalado (o FCC baixa o resto).
 
 ## Licença
 
@@ -61,7 +62,7 @@ npm ci
 node ferramentas\empacotar.js
 ```
 
-O programa pronto sai em `dist\FCC`. O `empacotar.js` também roda o autoteste do `.exe` novo e compara cada tela com o protótipo em `docs\prototipos\v2\ESCOLHIDA`; se alguma tela sair diferente, ele avisa.
+O programa pronto sai em `dist\FCC`. Antes de trocar qualquer coisa, o `empacotar.js` roda o autoteste do `.exe` novo (a tela precisa abrir inteira e sem erro). Para gerar só o zip de uma versão, sem mexer em `dist\FCC`: `node ferramentas\empacotar.js --zip <arquivo.zip>`.
 
 ## Aviso
 

@@ -132,7 +132,7 @@ const DICIONARIO = {
   claude: ['Claude Code, o assistente que o FCC usa', true],
   node: ['Node.js, roda programas JavaScript e o npm', false],
   dotnet: ['.NET, necessário para programas feitos em C#', false],
-  ollama: ['Ollama, roda modelos de IA no próprio computador', false],
+  ollama: ['Ollama, de uma versão antiga do FCC; pode remover', false],
   python: ['Python, linguagem e pip', false],
   git: ['Git, controle de versões', false],
 };
@@ -163,7 +163,6 @@ function envInstaladores() {
     PYTHONUSERBASE: f('python-user'),
     NUGET_PACKAGES: f('nuget'),
     DOTNET_CLI_HOME: f('dotnet-home'),
-    OLLAMA_MODELS: f('ollama', 'models'),
     TEMP: t(),
     TMP: t(),
   };

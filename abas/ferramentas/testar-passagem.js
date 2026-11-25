@@ -29,6 +29,21 @@ async function unidade() {
   { const { P, conversa, trocas } = montar(); const c = conversa(); P.ver(c, true); c.ultResp = 'erro'; c.passT0 = Date.now() + 1000; c.msgT = 0; P.ver(c); await dorme(300); ok(trocas.length === 1, 'nenhuma resposta veio: troca mesmo assim, a aba não trava'); }
   { const { P, conversa } = montar(); const c = conversa({ o: { dir: d, passagem: true }, ctx0: 4000 }); P.ver(c); ok(!c.passando, 'conversa nova já grande não troca em cadeia'); c.ctxAgora = 25000; P.ver(c); ok(c.passando === 1, 'conversa nova que cresceu troca'); }
   { const { P, conversa, trocas } = montar(); await dorme(30); const c = conversa(); P.ver(c, true); await dorme(20); c.ultResp = 'x'; c.msgT = Date.now(); P.ver(c); await dorme(120); c.msgT = Date.now(); await dorme(120); ok(!trocas.length, 'Claude ativo adia a troca forçada'); await dorme(350); ok(trocas.length === 1, 'parou de vez: a troca forçada ainda acontece'); }
+  // 14/11: soft limit (80%) only at the end of a reply; mid-task only past 125%
+  { const { P, conversa } = montar(); const c = conversa({ ctxAgora: 900 }); P.ver(c, true); ok(!c.passando, 'entre 80% e 125%: no meio da tarefa não troca'); P.ver(c); ok(c.passando === 1, 'entre 80% e 125%: no fim da resposta troca'); }
+  { const { P, conversa } = montar(); const c = conversa({ ctxAgora: 700 }); P.ver(c); ok(!c.passando, 'abaixo de 80% não troca nem no fim'); }
+  { const { P, conversa } = montar(); const c = conversa({ ctxAgora: 1300 }); P.ver(c, true); ok(c.passando === 1 && c.passMeio, 'acima de 125%: troca até no meio'); }
+  { const { P, conversa } = montar(); const c = conversa(); P.ver(c); ok(/Decided:/.test(c.fila.itens[0]) && /Read:/.test(c.fila.itens[0]) && /Tried:/.test(c.fila.itens[0]), 'pedido da nota inclui decisões, leituras e tentativas'); }
+  { const U = (t, x = {}) => ({ type: 'user', message: { content: t }, ...x }), IA = (t) => ({ type: 'assistant', message: { content: [{ type: 'text', text: t }] } });
+    const msgs = [U('primeiro pedido'), IA('feito 1'), U([{ type: 'tool_result', content: 'x' }]), IA('feito 1 final'), U('meta', { isMeta: true }), U('[FCC] Context 90k tokens: a NEW'), IA('PRONTO'),
+      U('[New conversation: previous one hit 90k tokens. State in x]\n\nsegundo pedido'), IA('resposta ' + 'y'.repeat(900)), U('Continue the task now; do not stop'), IA('ok')];
+    const r = PASS.recentes(msgs);
+    ok(/USER: primeiro pedido\nYOU: feito 1 final/.test(r), 'recentes: pedido + última resposta do turno');
+    ok(/USER: segundo pedido/.test(r) && !/New conversation/.test(r) && !/\[FCC\]/.test(r) && !/Continue the task/.test(r) && !/meta/.test(r), 'recentes: tira prefixo, pedido de nota, continuar e meta');
+    ok(r.length < 2000 && /…/.test(r), 'recentes: resposta longa cortada');
+    { const r2 = PASS.recentes([U('[New conversation: x]\nLast exchanges of the previous conversation (y):\n\nUSER: a [b] c\nYOU: d]\n[/end of previous exchanges]\n\nterceiro pedido'), IA('z')]);
+      ok(/^USER: terceiro pedido\nYOU: z$/.test(r2), 'recentes: prefixo com trocas antigas (e colchetes) sai inteiro'); }
+    ok(PASS.recentes(Array.from({ length: 30 }, (_, i) => U('p' + i))).split('USER:').length - 1 === 8, 'recentes: só os 8 últimos'); }
   { const { P, conversa, trocas } = montar(); const c = conversa({ fechado: true }); P.ver(c); ok(!c.passando && !trocas.length, 'conversa fechada não faz nada'); }
   { const { P, conversa } = montar(); fs.renameSync(nota, nota + '.x'); const c = conversa(); P.ver(c); ok(/passagem-abc\.md$/.test(c.arqPassagem), 'projeto sem PARADA usa nota própria'); fs.renameSync(nota + '.x', nota); }
 }
@@ -37,6 +52,7 @@ function fiacao() {   // main.js really passes the switches and calls this modul
   ok(/CLAUDE_CODE_DISABLE_BACKGROUND_TASKS = '1'/.test(m), 'ajudante preso à conversa ligado');
   ok(/BASH_MAX_TIMEOUT_MS = '3600000'/.test(m), 'comando longo pode durar até 1 hora');
   ok(/PASSAGEM\.ver\(c, true\)/.test(m) && /PASSAGEM\.ver\(c\)/.test(m), 'confere o limite no meio e no fim');
+  ok(/PASS_REC\(/.test(m) && /open the memories and skills/.test(m), 'conversa nova leva as últimas trocas e a regra de abrir memórias');
   ok(/AJUDANTES\.pararDaAba\(o\.id\)/.test(m), 'fim de resposta encerra ajudante que sobrou');
 }
 async function vivo() {

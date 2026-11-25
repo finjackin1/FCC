@@ -22,4 +22,11 @@ for (const r of ['D:\\FCC', 'D:\\Meus Programas\\FCC Ação', 'C:\\Users\\José 
   });
 }
 comRaiz('D:\\Meus Programas\\FCC Ação', (C) => assert.strictEqual(C.chaveProjeto('D:\\Projetos\\FCC'), 'D--Projetos-FCC'));
+// 25/11 layout like FAH: program in <root>\modulos\FCC.exe; older builds had FCC.exe at the root
+comRaiz('C:\\x', (C) => {
+  assert.strictEqual(C.raizDoExe('D:\\Meu FCC\\modulos\\FCC.exe'), 'D:\\Meu FCC');
+  assert.strictEqual(C.raizDoExe('D:\\Meu FCC\\FCC.exe'), 'D:\\Meu FCC');
+  assert(C.ehDaRaiz('D:\\Meu FCC\\Modulos\\FCC.exe', 'd:\\meu fcc') && C.ehDaRaiz('D:\\Meu FCC\\FCC.exe', 'D:\\Meu FCC\\'));
+  assert(!C.ehDaRaiz('D:\\Outro\\modulos\\FCC.exe', 'D:\\Meu FCC'));
+});
 console.log('ok testar-caminhos');

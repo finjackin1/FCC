@@ -18,7 +18,7 @@
     ok: '<path d="M3.5 8.5l3 3 6-7"/>', seta2: '<path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/>', atual: '<path d="M8 2.5v7M5 6.5l3 3 3-3M3 12.5h10"/>',
     painel: '<path d="M2.5 3h11v10h-11zM10 3v10"/>', trilho: '<path d="M2.5 3h11v10h-11zM6 3v10"/>', raio: '<path d="M9 1.5 3.5 9H8l-1 5.5L12.5 7H8z"/>',
     min: '<path d="M3.5 8h9"/>', maxi: '<path d="M3.5 3.5h9v9h-9z"/>', rest: '<path d="M5.5 5.5h7v7h-7zM3.5 10.5v-7h7"/>', tam: '<path d="M1.5 3.5h13v9h-13z"/><path d="M4.5 6h7v4h-7z"/>',
-    lampada: '<path d="M6 12.5h4M6.5 14h3M8 2a4 4 0 0 0-2.3 7.3c.5.4.8.9.8 1.5V11h3v-.2c0-.6.3-1.1.8-1.5A4 4 0 0 0 8 2z"/>', user: '<path d="M8 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 13.5c.6-2.5 2.6-3.5 5-3.5s4.4 1 5 3.5"/>',
+    lampada: '<path d="M6 12.5h4M6.5 14h3M8 2a4 4 0 0 0-2.3 7.3c.5.4.8.9.8 1.5V11h3v-.2c0-.6.3-1.1.8-1.5A4 4 0 0 0 8 2z"/>', user: '<path d="M8 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 13.5c.6-2.5 2.6-3.5 5-3.5s4.4 1 5 3.5"/>'
   };
   const ico = (n, c = '') => `<svg class="ico ${c}" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${I[n] || ''}</svg>`;
   const ast = (g = '✻') => `<span class="ast">${g}</span>`;
@@ -28,9 +28,11 @@
   // close 40 at edge: click hides to tray, HOLD 1 s quits (color grows from center)
   const botoesJanela = () => `<div class="win"><button class="bc" data-act="min" data-dica="MINIMIZAR|Clique: vai para a barra de tarefas">${ico('min')}</button><button class="bc tam" data-segurar="tam" data-dica="${S.maxi ? 'RESTAURAR' : 'MAXIMIZAR'}|Clique: ${S.maxi ? 'volta ao tamanho escolhido' : 'ocupa a tela toda'}|Segure 1 s: tamanho ${S.tam === 'max' ? 'Mín. 1080 × 608 (tudo × 0,75)' : 'Máx. 1440 × 810'}|Agora: ${S.tam === 'max' ? 'Máx. 1440 × 810' : 'Mín. 1080 × 608'}"><i class="enche"></i>${ico(S.maxi ? 'rest' : 'maxi')}</button><button class="bc fechar" data-segurar="sair" data-dica="FECHAR|Clique: esconde na bandeja (as conversas continuam)|Segure 1 s: sai do programa"><i class="enche"></i>${ico('x')}</button></div>`;
   // click and hold (user's standard): release before 1 s = click; 1 s held = other action (color fills from center)
-  const GESTO = { sair: { clique: () => M.agir('janela:bandeja'), segurar: () => M.agir('janela:sair') }, tam: { clique: () => M.agir('janela:maxi'), segurar: () => M.agir('janela:tam') } };
+  // 13/11 (user request): send button stays "send" while Claude works; holding it 2 s with the mouse turns it into stop and stops the reply (only the mouse: Esc no longer stops, his choice)
+  const GESTO = { sair: { clique: () => M.agir('janela:bandeja'), segurar: () => M.agir('janela:sair') }, tam: { clique: () => M.agir('janela:maxi'), segurar: () => M.agir('janela:tam') },
+    enviar: { ms: 2000, clique: () => M.agir('enviar'), segurar: () => M.agir('parar') } };
   let seg = null;
-  document.addEventListener('pointerdown', (e) => { const b = e.target.closest('[data-segurar]'); if (!b) return; const g = GESTO[b.dataset.segurar]; b.classList.add('segurando'); seg = { b, t: setTimeout(() => { b.classList.remove('segurando'); seg = null; g.segurar(); }, 1000), g }; });
+  document.addEventListener('pointerdown', (e) => { const b = e.target.closest('[data-segurar]'); if (!b || e.button !== 0) return; const g = GESTO[b.dataset.segurar]; b.classList.add('segurando'); seg = { b, t: setTimeout(() => { b.classList.remove('segurando'); seg = null; g.segurar(); }, g.ms || 1000), g }; });
   document.addEventListener('pointerup', () => { if (!seg) return; clearTimeout(seg.t); seg.b.classList.remove('segurando'); const g = seg.g; seg = null; g.clique(); });
   // tooltip after 0.6 s rest: uppercase title + what each gesture does. Common tooltips (title) use same box: Windows one
   // went outside the app (23/10, user request)
@@ -43,28 +45,28 @@
 })();
 // 25/10 (user request): tooltip for every clickable lacking one. Key = data-act prefix; function gets the rest.
 (function () {
-  const T = { est: 'ESTATÍSTICAS|Uso de tokens e conversas|F8', opcoes: 'OPÇÕES|F2', ajuda: 'ATALHOS DE TECLADO|F1', conta: 'CONTA|F9', ia: 'IA|Claude ou modelo no seu PC|F4', regras: 'REGRAS E MEMÓRIA|Regras da casa, memória do Claude e skills' };
+  const T = { est: 'ESTATÍSTICAS|Uso de tokens e conversas|F8', opcoes: 'OPÇÕES|F2', ajuda: 'ATALHOS DE TECLADO|F1', conta: 'CONTA|F9', ia: 'IA|Modelo e pensamento do Claude|F4', regras: 'REGRAS E MEMÓRIA|Regras da casa, memória do Claude e skills' };
   const D = {
     aba: 'CONVERSA ABERTA|Clique: vai para ela', abre: 'Mostra os detalhes desta ação', abrirp: 'Abre este projeto',
     atalho: (v) => v === 'programa' ? 'Abre o programa do projeto (.exe)' : v === 'relatorios' ? 'Abre a pasta de relatórios (logs)' : 'Atalho do projeto',
     cmd: 'Usa este comando ou skill', 'conta-usar': 'Troca para esta conta (sem abrir o navegador)', continuar: 'CONTINUAR|Retoma a última conversa deste projeto de onde parou|Enter',
     entrar: 'Entra numa conta do Claude (abre o navegador)', esf: 'PENSAMENTO|Quanto a IA pensa antes de responder: mais = melhor e mais lento', fecha: 'Fecha esta janela',
     'fecha-fora': '', fecharsim: 'Fecha mesmo com conversas trabalhando',
-    fixar: 'Fixa ou desafixa o projeto no topo', 'gguf-adicionar': 'Adiciona este arquivo .gguf à IA local', 'gguf-escolher': 'Escolhe um modelo .gguf do disco',
+    fixar: 'Fixa ou desafixa o projeto no topo',
     grupo: 'GRUPO|Clique: abre ou fecha|Arraste projetos para dentro', instalar: 'Instala o Claude Code', jaba: 'Troca de aba nesta janela', jest: 'Muda o período das estatísticas',
-    jop: 'Muda esta opção (vale na hora)', Lachado: 'Adiciona à IA local este modelo achado no PC', Lbaixar: 'Baixa esta versão do modelo', Lcap: 'Filtra por capacidade', Lfonte: 'Filtra pela origem do modelo',
-    livre: 'NOVA CONVERSA|Chat livre, fora de projeto|Ctrl+T · fechado, fica em Rascunhos', Llimpar: 'Tira da lista os downloads prontos', Lloja: 'Abre a loja de modelos locais', Lnada: '',
-    'login-abrir': 'Abre o navegador de novo para entrar', 'login-cancelar': 'Cancela a entrada na conta', Lsel: 'Mostra os detalhes deste modelo', Lset: 'Filtra pelo tipo de modelo',
-    Lsite: 'Abre a página do modelo no navegador', Lvar: 'Escolhe o tamanho ou versão do modelo', 'mcp-pasta': 'Escolhe a pasta com o mcp.json', memsel: 'Mostra este arquivo',
-    modal: (v) => T[v] || '', modelos: 'Baixar e gerenciar modelos locais', mover: 'Move o projeto para este grupo', mx: 'Mais opções', nivel: 'Nível de economia da IA local',
-    nova: 'NOVA CONVERSA|Começa uma conversa nova neste projeto', novogrupo: 'Cria um grupo para organizar projetos', ollama: 'Liga o Ollama (IA local)',
+    jop: 'Muda esta opção (vale na hora)',
+    livre: 'NOVA CONVERSA|Chat livre, fora de projeto|Ctrl+T · fechado, fica em Rascunhos',
+    'login-abrir': 'Abre o navegador de novo para entrar', 'login-cancelar': 'Cancela a entrada na conta',
+    memsel: 'Mostra este arquivo',
+    modal: (v) => T[v] || '', mover: 'Move o projeto para este grupo', mx: 'Mais opções',
+    nova: 'NOVA CONVERSA|Começa uma conversa nova neste projeto', novogrupo: 'Cria um grupo para organizar projetos',
     parada: 'Abre o PARADA.md e o PRA-TESTAR.md no Bloco de notas', pasta: 'Abre a pasta do projeto no Explorer', 'pasta-por': 'Adiciona uma pasta de onde os projetos são lidos',
     'pasta-tirar': 'Tira esta pasta da lista', pedido: 'Escreve este pedido pronto na caixa', pensar: 'Responder rápido ou pensar antes', perm: 'Responde ao pedido de permissão',
     permresp: 'Envia as respostas escolhidas', pm: 'Escolhe este modelo', pp: 'Responder rápido ou pensar antes', rascunho: 'RASCUNHO|Chat livre guardado|Clique: reabre de onde parou',
     rasctodos: 'Mostra ou esconde os rascunhos mais antigos', 'regra-editar': 'Abre no Bloco de notas', 'regra-pasta': 'Abre a pasta deste arquivo', reiniciar: 'Reinicia o programa já atualizado',
     restaurar: 'Reabre as conversas que estavam abertas', resumir: 'Resume a conversa para liberar memória', retomar: 'Volta nesta conversa de onde parou', sairconta: 'Sai desta conta neste PC',
     sel: 'PROJETO|Clique: mostra a ficha|2 cliques ou Enter: abre a conversa|⋯: fixar, renomear, mover', term: 'Alterna entre o chat e o terminal do Claude Code',
-    tstab: 'PARA TESTAR|Clique: abre a lista com caixas|Os marcados vão como testados na próxima mensagem', usarlocal: 'Passa esta conversa para a IA local (no seu PC)', usarmod: 'Usa este modelo na IA local',
+    tstab: 'PARA TESTAR|Clique: abre a lista com caixas|Os marcados vão como testados na próxima mensagem',
   };
   window.DICAS = D;   // outside M: app recreates M (ponte.js) after base.js
   window.dicaDe = (act) => { const i = act.indexOf(':'), k = i < 0 ? act : act.slice(0, i), v = i < 0 ? '' : act.slice(i + 1), d = D[k]; return typeof d === 'function' ? d(v) : d || ''; };

@@ -44,6 +44,13 @@
       <div class="n">${n}<small>${k === 'p' ? 'Enter cria a pasta e leva a conversa' : esc(c.quando)}</small></div>
       <button class="mais" data-act="renomear:r:${esc(c.id)}" title="Renomear">${ico('lapis')}</button><button class="mais" data-act="renomear:p:${esc(c.id)}" title="Virar projeto">${ico('pasta')}</button><button class="mais" data-act="rascapagar:${esc(c.id)}" title="Apagar (vai para a Lixeira)">${ico('x')}</button></div>`;
   }
+  // 14/11 (user request): chats from the assistant window (Ctrl+Alt+Espaço) get their own section, each with its real name
+  function assistente(c) {
+    const n = S.ren === 'r:' + c.id ? `<input class="ren" value="${esc(c.titulo)}" data-ren="r:${esc(c.id)}">` : `<div>${esc(c.titulo)}</div>`;
+    return `<div class="cv rasc assist" data-act="assistente:${esc(c.id)}" style="--cor:var(--fg3)"><span class="cv-ic">${ico('chat')}</span>
+      <div class="n">${n}<small>${esc(c.quando)}</small></div>
+      <button class="mais" data-act="renomear:r:${esc(c.id)}" title="Renomear">${ico('lapis')}</button><button class="mais" data-act="rascapagar:${esc(c.id)}" title="Apagar (vai para a Lixeira)">${ico('x')}</button></div>`;
+  }
   const lista = (ns) => ns.map(pj).filter(Boolean).map(proj).join('');
   const base = M.trilhoHTML;
   M.trilhoHTML = () => {
@@ -54,6 +61,8 @@
     let h = o.slice(0, iL);
     h += '<div class="lista">';
     if (abertas.length) h += `<div class="sec">Agora <small>${abertas.length}</small></div>${abertas.map(conv).join('')}`;
+    const as = M.assistentes ? M.assistentes() : [], av = as.slice(0, 4), ax = S.assistTodos ? as.slice(4) : [];
+    if (as.length) h += `<div class="sec">Assistente <small>${as.length}</small></div>${av.map(assistente).join('')}${ax.length ? `<div class="grp-c${S.assistT && Date.now() - S.assistT < 500 ? ' abrindo' : ''}">${ax.map(assistente).join('')}</div>` : ''}${as.length > 4 ? `<div class="sc nova" data-act="assisttodos:">${S.assistTodos ? 'Mostrar menos' : 'Ver todos (' + as.length + ')'}</div>` : ''}`;
     const ra = M.rascunhos ? M.rascunhos() : [], rv = ra.slice(0, 4), rx = S.rascTodos ? ra.slice(4) : [];
     if (ra.length) h += `<div class="sec">Rascunhos <small>${ra.length}</small></div>${rv.map(rascunho).join('')}${rx.length ? `<div class="grp-c${S.rascT && Date.now() - S.rascT < 500 ? ' abrindo' : ''}">${rx.map(rascunho).join('')}</div>` : ''}${ra.length > 4 ? `<div class="sc nova" data-act="rasctodos:">${S.rascTodos ? 'Mostrar menos' : 'Ver todos (' + ra.length + ')'}</div>` : ''}`;
     const so = (ns) => ns;   // 25/10 (user request): no 'projetos esperam você' button; dots show what each needs
@@ -68,8 +77,9 @@
   };
   const ag = M.agir;
   M.rascunhos = M.rascunhos || (() => (M.D.rascunhos || []).filter(c => !S.abas.some(t => t.sessao === c.id)));
-  M.rascunhoAcao = M.rascunhoAcao || ((ac, id, v) => { const L = M.D.rascunhos || [], c = L.find(x => x.id === id); if (!c) return; if (ac === 'renomear' && v) c.titulo = v; if (ac === 'apagar' || (ac === 'projeto' && v)) L.splice(L.indexOf(c), 1); if (ac === 'abrir') M.agir('livre:'); M.draw(); });
-  M.agir = (a) => { if (a.startsWith('rascunho:')) return M.rascunhoAcao('abrir', a.slice(9)); if (a.startsWith('rascapagar:')) return M.rascunhoAcao('apagar', a.slice(11)); if (a === 'rasctodos:') { S.rascTodos = !S.rascTodos; S.rascT = Date.now(); return M.draw(); } if (a.startsWith('grupo:')) S.grpT = { n: a.slice(6), t: Date.now() }; if (a.startsWith('exp:')) { const n = a.slice(4); S.exp = S.exp.includes(n) ? S.exp.filter(x => x !== n) : [...S.exp, n]; return M.draw(); } return ag(a); };
+  M.assistentes = M.assistentes || (() => (M.D.assistentes || []).filter(c => !S.abas.some(t => t.sessao === c.id)));
+  M.rascunhoAcao = M.rascunhoAcao || ((ac, id, v) => { const L = (M.D.rascunhos || []).some(x => x.id === id) ? M.D.rascunhos : (M.D.assistentes || []), c = L.find(x => x.id === id); if (!c) return; if (ac === 'renomear' && v) c.titulo = v; if (ac === 'apagar' || (ac === 'projeto' && v)) L.splice(L.indexOf(c), 1); if (ac === 'abrir') M.agir('livre:'); M.draw(); });
+  M.agir = (a) => { if (a.startsWith('rascunho:')) return M.rascunhoAcao('abrir', a.slice(9)); if (a.startsWith('assistente:')) return M.rascunhoAcao('abrir', a.slice(11)); if (a === 'assisttodos:') { S.assistTodos = !S.assistTodos; S.assistT = Date.now(); return M.draw(); } if (a.startsWith('rascapagar:')) return M.rascunhoAcao('apagar', a.slice(11)); if (a === 'rasctodos:') { S.rascTodos = !S.rascTodos; S.rascT = Date.now(); return M.draw(); } if (a.startsWith('grupo:')) S.grpT = { n: a.slice(6), t: Date.now() }; if (a.startsWith('exp:')) { const n = a.slice(4); S.exp = S.exp.includes(n) ? S.exp.filter(x => x !== n) : [...S.exp, n]; return M.draw(); } return ag(a); };
   document.addEventListener('click', (e) => { const b = e.target.closest('[data-act^="exp:"]'); if (b) { e.stopPropagation(); e.preventDefault(); const n = b.dataset.act.slice(4); S.expT = { n, t: Date.now() }; S.exp = S.exp.includes(n) ? S.exp.filter(x => x !== n) : [...S.exp, n]; if (M.salvar) M.salvar('trilho'); M.draw(); } }, true);
   Object.assign(M.CENAS, { 'b-fechado': () => { S.exp = []; } });
 })();

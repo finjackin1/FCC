@@ -2,7 +2,7 @@
 .v4-chip, .v4-ctx { height: 28px; display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border: 0; border-radius: 14px; background: transparent; color: var(--fg2); font: 500 12px 'Segoe UI', sans-serif; cursor: pointer; transition: background .15s, color .15s; }
 .v4-chip:hover, .v4-ctx:hover { background: var(--hover); color: var(--fg); }
 .v4-chip .ico, .v4-ctx .ico { width: 14px; height: 14px; }
-.v4-chip.plano { color: var(--local); } .v4-chip.auto { color: var(--acento); }
+.v4-chip.auto { color: var(--acento); }
 .v4-ctx span { font-variant-numeric: tabular-nums; color: var(--fg3); }
 .v4-anel .f { fill: none; stroke: var(--linha); stroke-width: 2.5; } .v4-anel .u { fill: none; stroke: var(--fg2); stroke-width: 2.5; stroke-linecap: round; transition: stroke-dasharray .4s ease-out; }
 

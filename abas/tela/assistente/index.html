@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR" data-tema="escuro"><head><meta charset="utf-8"><title>Assistente</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; media-src 'self' file:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+<link rel="stylesheet" href="assistente.css">
+</head><body>
+<div id="assist" data-estado="parado" data-modo="voz">
+  <div class="cab"><span class="ast" data-ast title="Claude">✻</span><b>Claude</b>
+    <div class="modo" data-modo><button data-m="voz" title="Responder falando (você ainda escreve; falar entra na próxima versão)">Voz</button><button data-m="texto" title="Responder só por escrito">Texto</button></div>
+    <button class="ib" data-nova title="Conversa nova" data-ico="mais"></button>
+    <button class="ib" data-abrir title="Abrir esta conversa no FCC" data-ico="abrir"></button>
+    <button class="ib fechar" data-fechar title="Esconder (Ctrl+Alt+Espaço abre de novo)" data-ico="x"></button>
+  </div>
+  <div data-lista>
+    <div class="vazio">Escreva o que precisa ou escolha:
+      <div class="sug"><button data-sug title="O Claude lê o texto copiado e devolve melhorado">Melhorar o texto que copiei</button><button data-sug title="Resumo de onde cada projeto parou">Onde parei nos projetos?</button><button data-sug title="Explicação curta e simples">Me explica uma coisa rapidinho</button></div>
+    </div>
+  </div>
+  <div class="pe">
+    <div class="voz-pe"><button class="orbe" data-calar title="Parar de falar" data-ico="pausa"></button><div class="ondas" data-ondas="24"></div></div>
+    <form data-form><input class="campo" placeholder="Escreva para o Claude" autocomplete="off"><button class="ib" data-enviar title="Enviar (Enter)" data-ico="enviar"></button></form>
+  </div>
+</div>
+<script src="assistente.js"></script>
+</body></html>

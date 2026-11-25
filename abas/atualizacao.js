@@ -1,4 +1,4 @@
-// Auto-update from GitHub (same flow as scrcpy-f atualizar.py, user request 03/11/2026):
+// Auto-update from GitHub (user request 03/11/2026):
 // 1. ask GitHub releases/latest of REPO; pick asset FCC-<ver>.zip; compare tag with this version (package.json).
 // 2. download to temp\atualizacao\<nome>.parcial, check size + sha256 (asset "digest" published by GitHub). Mismatch = deleted.
 // 3. extract with Windows tar into temp\atualizacao\extraido, find folder holding FCC.exe, refuse user folders, move to
